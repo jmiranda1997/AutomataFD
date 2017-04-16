@@ -146,6 +146,8 @@ public class Principal extends javax.swing.JFrame {
         editar_G2 = new javax.swing.JButton();
         borrar_G2 = new javax.swing.JButton();
         minimizar_G2 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        txt_expresion = new javax.swing.JTextField();
         jMenuBar1 = new javax.swing.JMenuBar();
         menu_opcciones = new javax.swing.JMenu();
         Nuevo_automata = new javax.swing.JMenuItem();
@@ -214,11 +216,11 @@ public class Principal extends javax.swing.JFrame {
             }
         });
         cadena_G1.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                cadena_G1KeyTyped(evt);
-            }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 cadena_G1KeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                cadena_G1KeyTyped(evt);
             }
         });
 
@@ -315,6 +317,13 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("Expresion");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         menu_opcciones.setText("Opcciones");
 
         Nuevo_automata.setText("Nuevo Automata");
@@ -379,13 +388,8 @@ public class Principal extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(editar_G1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(mover_G1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(minimizar_G1, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(txt_expresion, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addComponent(guardar_G1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -399,7 +403,16 @@ public class Principal extends javax.swing.JFrame {
                             .addComponent(Probar_G1))
                         .addComponent(jScrollPane1)
                         .addComponent(Automatas1, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(Grafico1, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)))
+                        .addComponent(Grafico1, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(editar_G1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton1)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(mover_G1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(minimizar_G1, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(15, 15, 15)
@@ -480,7 +493,11 @@ public class Principal extends javax.swing.JFrame {
                             .addComponent(editar_G2)
                             .addComponent(mover_G2)
                             .addComponent(minimizar_G2))))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addComponent(txt_expresion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         pack();
@@ -993,6 +1010,10 @@ public class Principal extends javax.swing.JFrame {
 
     }//GEN-LAST:event_Automatas1ComponentRemoved
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        txt_expresion.setText(Lista_Automatas.get(pos_G1).Expresion_Regular());
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1051,6 +1072,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuItem exportar_automata_imagen;
     private javax.swing.JButton guardar_G1;
     private javax.swing.JButton guardar_G2;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
@@ -1065,5 +1087,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton mover_G1;
     private javax.swing.JButton mover_G2;
     private javax.swing.JButton probar_G2;
+    private javax.swing.JTextField txt_expresion;
     // End of variables declaration//GEN-END:variables
 }
