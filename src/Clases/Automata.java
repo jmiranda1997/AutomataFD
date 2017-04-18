@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Clase que modela un Autómata Finito Determinista. Un Autómata FD onsiste en 5 objetos:
+ * Clase que modela un Autómata Finito Determinista. Un AFD consiste en 5 objetos:
  * 1) Un conjunto finito I de símbolos de entrada (el alfabeto).
  * 2) Un conjunto finito S de estados en los que puede estar el autómata.
  * 3) Un estado, denotado por s0, llamado el estado inicial.
