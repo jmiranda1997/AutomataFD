@@ -375,4 +375,9 @@ public class Automata {
     public Estado getEstados(int i) {
         return estados[i];
     }
+    
+    public String Expresion_Regular(){
+        Expresion_Regular expresion = new Expresion_Regular(estados, alfabeto);
+        return expresion.Expresion();
+    }
 }
