@@ -175,14 +175,20 @@ public final class AFNTOAFD {
         
         automata = new Automata(alfabeto, cantEstados);
         
-        Estado[] estadosAFD= new Estado[cantEstados];
+        Estado[] estadosFinales= new Estado[cantEstados];
         for (int i = 0; i < cantEstados; i++) {
-            estadosAFD[i] = new Estado(tamañoAlfabeto);
+            estadosFinales[i] = new Estado(tamañoAlfabeto);
         }
         for (int i = 0; i < cantEstados; i++) {
-            estadosAFD[i].setAceptable(estados.get(i).isFinal());
-            e
+            estadosFinales[i].setAceptable(estados.get(i).isFinal());
+            estadosFinales[i].setSimbolo(estados.get(i).getNombre());
         }
-        
+        for (int i = 0; i < cantEstados; i++) {
+            for (int j = 1; j < tamañoAlfabeto + 1; j++) {
+                estadosFinales[i].setTransicion(j - 1, estadosFinales[Integer.parseInt(tabla[i].get(j).toString().replace("E", ""))]);
+            }
+        }
+        automata.setEstados(estadosFinales);
     }
+
 }
