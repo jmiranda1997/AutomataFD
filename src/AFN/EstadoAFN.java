@@ -74,12 +74,12 @@ public class EstadoAFN {
      */
     public ArrayList<EstadoAFN> cerradura;
     public ArrayList<EstadoAFN> getTransicionesNulas() { 
-         cerradura = this.transiciones[this.transiciones.length-1];
+         cerradura = new ArrayList<EstadoAFN>();
          
+         ArrayList<EstadoAFN> aux = this.transiciones[this.transiciones.length-1];
+         cerraduraKleen(aux);
          
-         cerraduraKleen(cerradura);
-         
-         if(cerradura.contains(this)) cerradura.add(this);
+         if(!cerradura.contains(this)) cerradura.add(this);
          
          return cerradura;
          
