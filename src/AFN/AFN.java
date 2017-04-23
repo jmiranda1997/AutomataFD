@@ -53,6 +53,18 @@ public class AFN {
             this.estados[i] = new EstadoAFN(this.cantidadSimbolos);
         this.iterador = null;
     }
+    
+     public AFN(String[] alfabeto, int cantidadEstados,ArrayList<String> nombre_estados) {
+        this.alfabeto = alfabeto;
+        this.cantidadSimbolos = alfabeto.length;
+        this.cantidadEstados = cantidadEstados;
+        this.estados = new EstadoAFN[cantidadEstados];
+        for(int i=0; i<cantidadEstados; i++){
+            this.estados[i] = new EstadoAFN(this.cantidadSimbolos);
+            this.estados[i].setNombre(nombre_estados.get(i));
+        }
+        this.iterador = null;
+    }
     public AFN(String[] alfabeto) {
         this.alfabeto = alfabeto;
         this.cantidadSimbolos = alfabeto.length;
