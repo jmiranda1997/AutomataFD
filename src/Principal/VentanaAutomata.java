@@ -4,8 +4,12 @@
  * and open the template in the editor.
  */
 package Principal;
+import AFN.AFN;
+import AFN.AFNTOAFD;
 import Clases.Automata;
 import Clases.Estado;
+import ExpresionRegular.ExpresionRegular;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +17,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import javax.swing.*;
 /**
  *
@@ -22,7 +27,8 @@ public class VentanaAutomata implements ActionListener {
     /* DefiniciÛn de variables */
     Automata nuevo;     // AutÛmata a crear
     JDialog ventana;    // Ventana principal
-    boolean esDeterminista;
+    String Expresion;
+    int tipo;
     /* DefiniciÛn de Paneles Primarios */
     JPanel panel_alfabeto, panel_estados, panel_transiciones;
     /* DefiniciÛn de Paneles Secundarios (Los que van dentro de un Primario) */
@@ -46,11 +52,12 @@ public class VentanaAutomata implements ActionListener {
     private String mensaje_error;
     private int contador_cajas;
     
-    public VentanaAutomata(int cantidadEstados, int cantidadSimbolos, boolean esDeterminista){
+    public VentanaAutomata(int cantidadEstados, int cantidadSimbolos, int tipo,String Expresion_Regular){
         ventana = new JDialog();
         ventana.setModal(true);
         ventana.setLayout(null);
-        this.esDeterminista = esDeterminista;
+        this.Expresion = Expresion_Regular;
+        this.tipo = tipo;
         this.cantidadEstados = cantidadEstados;
         this.cantidadSimbolos = cantidadSimbolos;
         this.contador_cajas = 0;
@@ -76,7 +83,8 @@ public class VentanaAutomata implements ActionListener {
         ventana.setLocation(100,50);
         //vent.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        ventana.setSize(ancho, alto);
-        ventana.setSize(700, panel_estados.getHeight()+100);
+        if(tipo == 1 || tipo == 2) ventana.setSize(700, panel_estados.getHeight()+100);
+        else ventana.setSize(500,panel_alfabeto.getHeight()+100);
         ventana.setResizable(false);
         ventana.setTitle("Crear Automata");
         ventana.setVisible(true);
@@ -120,7 +128,7 @@ public class VentanaAutomata implements ActionListener {
         
         ventana.add(titulo_alfabeto);
         ventana.add(panel_alfabeto);
-        
+        if(tipo== 1 || tipo == 2){
         /* InicializaciÛn de los paneles secundarios que se agregar·n al 'panel_estados' */
         // Panel de las etiquetas "Simbolo {i} = ":
         panel_etiquetas_estados = new JPanel(new GridLayout(cantidadEstados, 1, 0, 0));
@@ -155,6 +163,7 @@ public class VentanaAutomata implements ActionListener {
         ventana.add(titulo_estado_inicial);
         ventana.add(titulo_estados);
         ventana.add(panel_estados);
+        }
     }
     private void creacion_espacio_transiciones() {
         /* InicializaciÛn de los paneles secundarios que se agregar·n al 'panel_transiciones' */
@@ -262,11 +271,12 @@ public class VentanaAutomata implements ActionListener {
         if (e.getSource() == guardar_alfabeto_estados) {
             mensaje_error = "Error.\n";
             boolean alfabetoValido = esAlfabetoValido();
-            boolean estadosValidos = sonEstadosValidos();
+            boolean estadosValidos = true;
+            if (tipo == 1 || tipo == 2) estadosValidos = sonEstadosValidos();
             if (alfabetoValido == false || estadosValidos == false) {
                 JOptionPane.showMessageDialog(ventana, mensaje_error, "Error en Alfabeto o Estados", JOptionPane.ERROR_MESSAGE, null);
             } else {    // Los SÌmbolos y Estados son correctos
-                if(esDeterminista){
+                if(tipo == 1){
                 // Inicio el guardado de los SÌmbolos del Alfabeto:
                 alfabeto = new String[cantidadSimbolos];
                 for(int cont=0; cont<cantidadSimbolos; cont++)
@@ -306,7 +316,36 @@ public class VentanaAutomata implements ActionListener {
                     }
                 });
                 }
-                else{
+                else if (tipo == 2){
+                    ventana.setVisible(false);
+                    // Inicio el guardado de los SÌmbolos del Alfabeto:
+                    alfabeto = new String[cantidadSimbolos];
+                    for(int cont=0; cont<cantidadSimbolos; cont++)
+                    alfabeto[cont] = cajas_alfabeto[cont].getText();
+                    ArrayList<String> sim_estados = new ArrayList<>();
+                    for(int cont=0; cont<cantidadEstados; cont++)
+                        sim_estados.add(cajas_estados[cont].getText());
+                    Crear_no_determinista aux = new Crear_no_determinista(new Frame(), true, alfabeto, sim_estados);
+                    aux.setVisible(true);
+                    AFNTOAFD a = new AFNTOAFD(aux.getAutomata());
+                    nuevo = a.getAutomata();
+                    ventana.dispose();
+                }else{
+                    alfabeto = new String[cantidadSimbolos];
+                    for(int cont=0; cont<cantidadSimbolos; cont++)
+                    alfabeto[cont] = cajas_alfabeto[cont].getText();
+                    ExpresionRegular a = new ExpresionRegular(Expresion);
+                    boolean correcto = a.validarER(Expresion);
+                    if(correcto){
+                        a.generarGrupos();
+                        AFN no_det = new AFN(alfabeto);
+                        no_det = no_det.crearAutomata(a.getGrupo());
+                        AFNTOAFD aux = new AFNTOAFD(no_det);
+                        nuevo = aux.getAutomata();
+                        ventana.dispose();
+                    }else{
+                        ventana.dispose();
+                    }
                     
                 }
             }
