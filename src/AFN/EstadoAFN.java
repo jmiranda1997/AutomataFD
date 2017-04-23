@@ -37,7 +37,7 @@ public class EstadoAFN {
         this.aceptable = false;
         this.transiciones = new ArrayList[cantidadSimbolos + 1];
         for(int i=0; i<=cantidadSimbolos; i++)
-            this.transiciones[i] = new ArrayList<EstadoAFN>();  // Agrego las 'cantidadSimbolos + 1' filas que tendrá el estado (no inicializo los arreglos)
+            this.transiciones[i] = new ArrayList<EstadoAFN>(); // Agrego las 'cantidadSimbolos + 1' filas que tendrá el estado (no inicializo los arreglos)
         /* Las transiciones para el caracter nulo se encontrarán en la última posición del arreglo */
     }
 
@@ -72,7 +72,29 @@ public class EstadoAFN {
      * Función que devuelve todas las transiciones asociadas a la cadena vacía pertenecientes a este EstadoAFN.
      * @return el arreglo de transiciones (que son otros estados) asociados a la cadena vacía.
      */
-    public ArrayList<EstadoAFN> getTransicionesNulas() { return this.transiciones[this.transiciones.length-1]; }
+    public ArrayList<EstadoAFN> cerradura;
+    public ArrayList<EstadoAFN> getTransicionesNulas() { 
+         cerradura = this.transiciones[this.transiciones.length-1];
+         
+         
+         cerraduraKleen(cerradura);
+         
+         if(cerradura.contains(this)) cerradura.add(this);
+         
+         return cerradura;
+         
+        //return this.transiciones[this.transiciones.length-1]; }
+    }
+    private void cerraduraKleen(ArrayList<EstadoAFN> Array){
+         if(!Array.isEmpty()){
+            for(EstadoAFN aux : Array){
+               ArrayList<EstadoAFN>aux2 = aux.transiciones[aux.transiciones.length-1];
+               if(!cerradura.contains(aux))cerradura.add(aux);
+               if(!aux2.isEmpty()) cerraduraKleen(aux2);  
+            } 
+         }
+    }
+    
     /**
      * Función que devuelve el nombre de este EstadoAFN.
      * @return el nombre con el que se identifica este estado.
@@ -114,7 +136,7 @@ public class EstadoAFN {
     public void setNombre(String nombre) { this.nombre = nombre; }
     
     /**
-     * Función que determina si dos estados, this y est, son equivalentes. "Dos estados son equivalentes si y sólo si ambos
+     * Función que determina si dos estados,this y est, son equivalentes. "Dos estados son equivalentes si y sólo si ambos
      * son estados finales o ambos son estados no finales".
      * @param est objeto de tipo EstadoAFN que se compara con this.
      * @return 'true' si los estados son equivalentes; 'false' en caso contrario.

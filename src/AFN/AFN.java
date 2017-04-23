@@ -46,6 +46,16 @@ public class AFN {
         for(int i=0; i<cantidadEstados; i++)
             this.estados[i] = new EstadoAFN(this.cantidadSimbolos);
     }
+
+    public int getCantidadSimbolos() {return cantidadSimbolos;}
+
+    public String[] getAlfabeto() {return alfabeto;}
+
+    public EstadoAFN[] getEstados() {
+        return estados;
+    }
+    
+    
     
     /**FALTA IMPLEMENTAR!!!
      * Función que determina si 'cadena' pertenece al Lenguaje que implementa el Autómata. Para ello, prueba cada uno de los caracteres
