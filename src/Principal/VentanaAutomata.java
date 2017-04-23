@@ -22,7 +22,7 @@ public class VentanaAutomata implements ActionListener {
     /* DefiniciÛn de variables */
     Automata nuevo;     // AutÛmata a crear
     JDialog ventana;    // Ventana principal
-    
+    boolean esDeterminista;
     /* DefiniciÛn de Paneles Primarios */
     JPanel panel_alfabeto, panel_estados, panel_transiciones;
     /* DefiniciÛn de Paneles Secundarios (Los que van dentro de un Primario) */
@@ -46,10 +46,11 @@ public class VentanaAutomata implements ActionListener {
     private String mensaje_error;
     private int contador_cajas;
     
-    public VentanaAutomata(int cantidadEstados, int cantidadSimbolos){
+    public VentanaAutomata(int cantidadEstados, int cantidadSimbolos, boolean esDeterminista){
         ventana = new JDialog();
         ventana.setModal(true);
         ventana.setLayout(null);
+        this.esDeterminista = esDeterminista;
         this.cantidadEstados = cantidadEstados;
         this.cantidadSimbolos = cantidadSimbolos;
         this.contador_cajas = 0;
@@ -265,6 +266,7 @@ public class VentanaAutomata implements ActionListener {
             if (alfabetoValido == false || estadosValidos == false) {
                 JOptionPane.showMessageDialog(ventana, mensaje_error, "Error en Alfabeto o Estados", JOptionPane.ERROR_MESSAGE, null);
             } else {    // Los SÌmbolos y Estados son correctos
+                if(esDeterminista){
                 // Inicio el guardado de los SÌmbolos del Alfabeto:
                 alfabeto = new String[cantidadSimbolos];
                 for(int cont=0; cont<cantidadSimbolos; cont++)
@@ -303,6 +305,10 @@ public class VentanaAutomata implements ActionListener {
                           crearAutomata();
                     }
                 });
+                }
+                else{
+                    
+                }
             }
         }
         
@@ -322,7 +328,7 @@ public class VentanaAutomata implements ActionListener {
         }
         // DefiniciÛn de los Tipos de Estados (finales o no finales)
         for(int i=0; i<cantidadEstados; i++) {
-            String tipo = (String)tipo_estado[i].getItemAt(i);  // Obtengo "Si" o "No"
+            String tipo = (String)tipo_estado[i].getSelectedItem();  // Obtengo "Si" o "No"
             if ("Si".equals(tipo) == true)
                 estados[i].setAceptable(true);
             else

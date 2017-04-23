@@ -57,6 +57,16 @@ public class AFN {
         this.alfabeto = alfabeto;
         this.cantidadSimbolos = alfabeto.length;
     }
+
+    public int getCantidadSimbolos() {return cantidadSimbolos;}
+
+    public String[] getAlfabeto() {return alfabeto;}
+
+    public EstadoAFN[] getEstados() {
+        return estados;
+    }
+    
+    
     
     /**FALTA IMPLEMENTAR!!!
      * Función que determina si 'cadena' pertenece al Lenguaje que implementa el Autómata. Para ello, prueba cada uno de los caracteres

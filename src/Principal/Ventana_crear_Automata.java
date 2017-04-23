@@ -13,14 +13,17 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javafx.beans.value.ChangeListener;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
 
 /**
  *
@@ -35,11 +38,40 @@ public class Ventana_crear_Automata  {
     JDialog ventana;
     VentanaAutomata automata;
     JScrollPane Caja_Comentario;
+    JRadioButton tipo[];
     int Can_simbolos, Can_estados;
 
     public Ventana_crear_Automata() {
           ventana = new JDialog();
         ventana.setLayout(null);
+        tipo = new JRadioButton[2];
+        tipo[0] = new JRadioButton("Determinista");
+        tipo[0].setSelected(true);
+        tipo[0].addActionListener(new ActionListener() {
+              @Override
+              public void actionPerformed(ActionEvent ae) {
+        
+                      if(tipo[0].isSelected()){
+                          tipo[1].setSelected(false);
+                      }else{
+                          tipo[1].setSelected(true);
+                      }
+                  
+            }
+          });
+        tipo[1] = new JRadioButton("No Determinista");
+        tipo[1].setSelected(false);
+        tipo[1].addActionListener(new ActionListener() {
+              @Override
+              public void actionPerformed(ActionEvent ae) {
+                  if(tipo[1].isSelected()){
+                          tipo[0].setSelected(false);
+                      }else{
+                          tipo[0].setSelected(true);
+                      }
+             }
+          });
+        
         ventana.setModal(true);
         automata = null;
         nombre = new JLabel("Nombre del Automata: ");
@@ -69,12 +101,18 @@ public class Ventana_crear_Automata  {
                           JOptionPane.showMessageDialog(ventana, "No se puede crear un Automata con 0 estados o 0 simbolos", "Error", JOptionPane.ERROR_MESSAGE, null);
                       }
                       else {
-                          automata = new VentanaAutomata(Can_estados, Can_simbolos);
-                          ventana.dispose();
-                          if(automata.getNuevo()!=null ){
-                          automata.getNuevo().setNombre(nombre);
-                          automata.getNuevo().setDescripcion(desrip);
-                          ventana.dispose();}
+                          if(tipo[0].isSelected()){
+                            automata = new VentanaAutomata(Can_estados, Can_simbolos,true);
+                            ventana.dispose();
+                            if(automata.getNuevo()!=null ){
+                            automata.getNuevo().setNombre(nombre);
+                            automata.getNuevo().setDescripcion(desrip);
+                            ventana.dispose();}
+                          }
+                          else{
+                              
+                          }
+                          
                       }
                   }
             }
@@ -82,12 +120,13 @@ public class Ventana_crear_Automata  {
         Crear();
         
         
-        panel1.setBounds(10, 10, 110, 300);
-        descripcion.setBounds(10,110,300,90);
+        panel1.setBounds(10, 10, 300, 140);
+        descripcion.setBounds(10,150,300,90);
         ventana.add(panel1);
         ventana.add(descripcion);
        // guardar.addActionListener(this);
-        Crear.setBounds(110, 200, 100, 30);
+        Crear.setBounds(110, 260, 100, 30);
+       
         ventana.add(Crear);
         ventana.addWindowListener(new WindowAdapter() {
             
@@ -101,14 +140,18 @@ public class Ventana_crear_Automata  {
         ventana.setLocation(320,200);
         ventana.setTitle("Crear Automata");
         //vent.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        ventana.setSize(320, 260);
+        ventana.setSize(330, 330);
         ventana.setResizable(false);
         ventana.setVisible(true);
     }
     
+    
+    
+    
+    
         public String texto1="";
     private void Crear() {
-        panel1 = new JPanel(new GridLayout(4,2));
+        panel1 = new JPanel(new GridLayout(5,2));
         descripcion = new JPanel();
 
         caja_descripcion = new JTextArea(3,25);
@@ -182,7 +225,10 @@ public class Ventana_crear_Automata  {
         panel1.add(cajas[0]);
         panel1.add(estados);
         panel1.add(cajas[1]);
+        panel1.add(tipo[0]);
+        panel1.add(tipo[1]);
         panel1.add(des);
+        
  
     }
 
