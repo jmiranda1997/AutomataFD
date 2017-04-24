@@ -164,12 +164,19 @@ public final class AFNTOAFD {
         AUX = conjunto.getEstados();
         
         for (EstadoAFN Estados1 : AUX){
+            ArrayList<EstadoAFN> nulas = Estados1.getTransicionesNulas();
             ArrayList<EstadoAFN> AUX2 = Estados1.getTransiciones(index);
             if (AUX2 != null){
                 for (EstadoAFN AUX21 : AUX2) {
                     if(!nuevoArray.contains(AUX21)) nuevoArray.add(AUX21);
                 }
             }
+            for(EstadoAFN nulas1 : nulas){
+                if (!nuevoArray.contains(nulas1)) {
+                    nuevoArray.add(nulas1);
+                }
+            
+        }
         }
         
         return nuevoArray;
