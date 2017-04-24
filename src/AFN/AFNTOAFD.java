@@ -62,26 +62,38 @@ public final class AFNTOAFD {
         alfabeto = AFN.getAlfabeto();
         inicializarTabla();
         estadosAFN = AFN.getEstados();
+        estados = new ArrayList<ConjuntosEstadosAFN>();
         ArrayList<EstadoAFN> conjuntoTemp = null;
         /*Se crea el primer conjunto de estados apartir de el estado inicial (el cual tambien sera estado inicial) se guarda en el array list
         *y se almacena en la tabla de transiciones 
         */
         int contEstados = 0, contTE = 0;
-        boolean Fin = true;
+        boolean Fin = true, sumindero = false;
+        String Sumidero="";
         conjuntoTemp = estadosAFN[0].getTransicionesNulas();
         estados.add(new ConjuntosEstadosAFN("E" + contEstados,  conjuntoTemp, esFinal(conjuntoTemp)));
         
         contTE++;
 
         while (Fin) {
-            tabla[contEstados].add(estados.get(contTE).getNombre());
+            tabla[0].add(estados.get(contEstados).getNombre());
             conjuntoTemp = null;
             for (int i = 1; i < alfabeto.length +1 ; i++) {
                 conjuntoTemp = transiciones(estados.get(contEstados), i - 1);
-                if (!existe(conjuntoTemp)) {
+                if(conjuntoTemp.isEmpty() && !sumindero){
                     estados.add(new ConjuntosEstadosAFN("E" + contTE, conjuntoTemp, esFinal(conjuntoTemp)));
+                    Sumidero = estados.get(contTE).getNombre();
+                    tabla[i].add(Sumidero);
                     contTE++;
+                    sumindero = true;
+                }
+                else if (conjuntoTemp.isEmpty() && sumindero){
+                    tabla[i].add(Sumidero);
+                }
+                else if (!existe(conjuntoTemp)) {
+                    estados.add(new ConjuntosEstadosAFN("E" + contTE, conjuntoTemp, esFinal(conjuntoTemp)));
                     tabla[i].add(estados.get(contTE).getNombre());
+                    contTE++;
                 }else{
                     tabla[i].add(busqueda(conjuntoTemp));
                 }
@@ -89,7 +101,7 @@ public final class AFNTOAFD {
             contEstados++;
             
             
-            if (contEstados > contTE) {
+            if (contEstados == estados.size()) {
                 Fin = false;
             }
         }
@@ -117,13 +129,15 @@ public final class AFNTOAFD {
         return Final;
     } 
     private boolean existe(ArrayList<EstadoAFN> Estados){
-      for(ConjuntosEstadosAFN Conjuto1 : estados){
-        if(!Conjuto1.equivalencia(Estados)){
-            return false;
+    boolean ex = false;
+        for(ConjuntosEstadosAFN Conjuto1 : estados){
+        if(Conjuto1.equivalencia(Estados)){
+            ex = true;
+            return ex;
+            
         }
       }
-      
-      return true;
+      return ex;
     }
     /*
     private ArrayList<EstadoAFN> transiciones(ConjuntosEstadosAFN conjunto){
@@ -163,7 +177,7 @@ public final class AFNTOAFD {
     
     private String busqueda(ArrayList<EstadoAFN> Estados){
         for (int cont = 0; cont < estados.size(); cont++){
-            if (estados.get(cont).getEstados().equals(Estados)) {
+            if (estados.get(cont).equivalencia(Estados)) {
                 return estados.get(cont).getNombre();
             }
         }
@@ -185,7 +199,7 @@ public final class AFNTOAFD {
         }
         for (int i = 0; i < cantEstados; i++) {
             for (int j = 1; j < tamañoAlfabeto + 1; j++) {
-                estadosFinales[i].setTransicion(j - 1, estadosFinales[Integer.parseInt(tabla[i].get(j).toString().replace("E", ""))]);
+                estadosFinales[i].setTransicion(j - 1, estadosFinales[Integer.parseInt(tabla[j].get(i).toString().replace("E", ""))]);
             }
         }
         automata.setEstados(estadosFinales);

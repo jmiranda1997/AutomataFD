@@ -31,7 +31,7 @@ import javax.swing.event.ChangeEvent;
  */
 public class Ventana_crear_Automata  {
     JPanel panel1,descripcion;
-    JLabel simbolos, estados, nombre, des;
+    JLabel simbolos, estados, nombre, des,expresion;
     JTextField[] cajas;
     JTextArea caja_descripcion;
     JButton Crear;
@@ -44,7 +44,7 @@ public class Ventana_crear_Automata  {
     public Ventana_crear_Automata() {
           ventana = new JDialog();
         ventana.setLayout(null);
-        tipo = new JRadioButton[2];
+        tipo = new JRadioButton[3];
         tipo[0] = new JRadioButton("Determinista");
         tipo[0].setSelected(true);
         tipo[0].addActionListener(new ActionListener() {
@@ -53,8 +53,11 @@ public class Ventana_crear_Automata  {
         
                       if(tipo[0].isSelected()){
                           tipo[1].setSelected(false);
+                          tipo[2].setSelected(false);
+                          cajas[3].setEnabled(false);
                       }else{
                           tipo[1].setSelected(true);
+                          tipo[2].setSelected(false);
                       }
                   
             }
@@ -66,8 +69,27 @@ public class Ventana_crear_Automata  {
               public void actionPerformed(ActionEvent ae) {
                   if(tipo[1].isSelected()){
                           tipo[0].setSelected(false);
+                          tipo[2].setSelected(false);
+                          cajas[3].setEnabled(false);
                       }else{
                           tipo[0].setSelected(true);
+                          tipo[2].setSelected(false);
+                      }
+             }
+          });
+        tipo[2] = new JRadioButton("Expresion Regular");
+        tipo[2].setSelected(false);
+        tipo[2].addActionListener(new ActionListener() {
+              @Override
+              public void actionPerformed(ActionEvent ae) {
+                  if(tipo[2].isSelected()){
+                          tipo[0].setSelected(false);
+                          tipo[1].setSelected(false);
+                          cajas[3].setEnabled(true);
+                      }else{
+                          tipo[0].setSelected(true);
+                          tipo[1].setSelected(false);
+                          cajas[3].setEnabled(false);
                       }
              }
           });
@@ -78,7 +100,8 @@ public class Ventana_crear_Automata  {
         simbolos = new JLabel("Cantidad de Simbolos: ");
         estados = new JLabel("Cantidad de Estados: ");
         des = new JLabel("Descripcion: ");
-        cajas = new JTextField[3];
+        expresion = new JLabel("Expresion Regular");
+        cajas = new JTextField[4];
         Crear = new JButton("Crear");
         Crear.addActionListener(new ActionListener() {
             @Override
@@ -90,27 +113,42 @@ public class Ventana_crear_Automata  {
                 C_simbolos.replaceAll(" ", "");
                 C_estados.replaceAll(" ", "");
                 
-                  if(C_estados.length()==0 || C_simbolos.length()==0){
+                  if((C_estados.length()==0 || C_simbolos.length()==0)&& (tipo[0].isSelected() || tipo[1].isSelected())){
                           JOptionPane.showMessageDialog(ventana, "El campo de simbolos o estados esta vacio", "Error", JOptionPane.ERROR_MESSAGE, null);
                   }
-                  
+                  else if(C_simbolos.length() == 0) JOptionPane.showMessageDialog(ventana, "El campo de simbolos esta vacio", "Error", JOptionPane.ERROR_MESSAGE, null);
                   else{
+                      if(tipo[0].isSelected() || tipo[1].isSelected() )
                       Can_estados = Integer.parseInt(C_estados);
+                      else Can_estados = 1;
                       Can_simbolos = Integer.parseInt(C_simbolos);
                       if(Can_estados==0 || Can_simbolos == 0){
                           JOptionPane.showMessageDialog(ventana, "No se puede crear un Automata con 0 estados o 0 simbolos", "Error", JOptionPane.ERROR_MESSAGE, null);
                       }
                       else {
+                          String exp = cajas[3].getText().trim();
                           if(tipo[0].isSelected()){
-                            automata = new VentanaAutomata(Can_estados, Can_simbolos,true);
+                            automata = new VentanaAutomata(Can_estados, Can_simbolos,1,exp);
                             ventana.dispose();
                             if(automata.getNuevo()!=null ){
                             automata.getNuevo().setNombre(nombre);
                             automata.getNuevo().setDescripcion(desrip);
                             ventana.dispose();}
                           }
-                          else{
-                              
+                          else if(tipo[1].isSelected()){
+                              automata = new VentanaAutomata(Can_estados, Can_simbolos,2,exp);
+                              ventana.dispose();
+                              if(automata.getNuevo()!=null ){
+                              automata.getNuevo().setNombre(nombre);
+                              automata.getNuevo().setDescripcion(desrip);
+                              ventana.dispose();}
+                          }else{
+                              automata = new VentanaAutomata(Can_estados, Can_simbolos,3,exp);
+                              ventana.dispose();
+                              if(automata.getNuevo()!=null ){
+                              automata.getNuevo().setNombre(nombre);
+                              automata.getNuevo().setDescripcion(desrip);
+                              ventana.dispose();}
                           }
                           
                       }
@@ -151,7 +189,7 @@ public class Ventana_crear_Automata  {
     
         public String texto1="";
     private void Crear() {
-        panel1 = new JPanel(new GridLayout(5,2));
+        panel1 = new JPanel(new GridLayout(6,2));
         descripcion = new JPanel();
 
         caja_descripcion = new JTextArea(3,25);
@@ -219,14 +257,19 @@ public class Ventana_crear_Automata  {
             }
         });
         cajas[2] = new JTextField();
+        cajas[3] = new JTextField();
+        cajas[3].setEnabled(false);
         panel1.add(nombre);
         panel1.add(cajas[2]);
         panel1.add(simbolos);
         panel1.add(cajas[0]);
         panel1.add(estados);
         panel1.add(cajas[1]);
+        panel1.add(expresion);
+        panel1.add(cajas[3]);
         panel1.add(tipo[0]);
         panel1.add(tipo[1]);
+        panel1.add(tipo[2]);
         panel1.add(des);
         
  

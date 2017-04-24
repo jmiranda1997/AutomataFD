@@ -62,6 +62,6 @@ public class ConjuntosEstadosAFN {
         
         return equivalente;
     }
-    
+
   
 }
