@@ -139,8 +139,8 @@
                           </Group>
                       </Group>
                   </Group>
-                  <Component id="txt_expresion1" alignment="0" min="-2" pref="340" max="-2" attributes="0"/>
-                  <Component id="Grafico1" alignment="0" min="-2" pref="358" max="-2" attributes="0"/>
+                  <Component id="Grafico1" alignment="0" pref="358" max="32767" attributes="0"/>
+                  <Component id="txt_expresion1" alignment="0" max="32767" attributes="0"/>
               </Group>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
@@ -276,7 +276,7 @@
     <Container class="javax.swing.JScrollPane" name="Grafico1">
       <Properties>
         <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
-          <Color id="Default Cursor"/>
+          <Color id="Cursor Por defecto"/>
         </Property>
       </Properties>
 
@@ -463,14 +463,8 @@
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="txt_expresion1">
-      <Properties>
-        <Property name="enabled" type="boolean" value="false"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txt_expresion2">
-      <Properties>
-        <Property name="enabled" type="boolean" value="false"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="jButton1">
       <Properties>

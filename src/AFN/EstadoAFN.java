@@ -86,15 +86,21 @@ public class EstadoAFN {
         //return this.transiciones[this.transiciones.length-1]; }
     }
     private void cerraduraKleen(ArrayList<EstadoAFN> Array){
-         if(!Array.isEmpty()){
-            for(EstadoAFN aux : Array){
-               ArrayList<EstadoAFN>aux2 = aux.transiciones[aux.transiciones.length-1];
-               if(!cerradura.contains(aux))cerradura.add(aux);
+         if(!Array.isEmpty()) {
+            for(EstadoAFN aux : Array) {
+               ArrayList<EstadoAFN> aux2 = aux.transiciones[aux.transiciones.length-1];
+                for (int i = 0; i < aux2.size(); i++) {
+                    if(!cerradura.contains(aux2.get(i))){
+                        cerradura.add(aux2.get(i));
+                    }
+                }
                if(!aux2.isEmpty()) cerraduraKleen(aux2);  
             } 
          }
     }
-    
+    /*public boolean nulas(){
+        boolean nul= false
+    }*/
     /**
      * Función que devuelve el nombre de este EstadoAFN.
      * @return el nombre con el que se identifica este estado.
