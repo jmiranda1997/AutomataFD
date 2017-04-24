@@ -127,12 +127,23 @@ public class Arrastrar extends JPanel implements MouseListener{
         g.drawString(Automata.getEstados()[i].getSimbolo(), c[i].x+20, c[i].y+30);
     }
     public void dibujarTransiciones(Graphics g){
+        // Cuando se da el caso de que un estado apunta a sí mismo, se dibuja un círuculo que es tangente al punto del
+        // circuloSuperior
+        // Variable que servirá para determinar el tamaño de las secciones de óvalos que se dibujarán para las transiciones hacia el mismo estado
+        int contLlegada = 0;
         for (int i = 0; i < NCirculos; i++) {
             for (int j = 0; j < Automata.getCantidadSimbolos(); j++) {
                 Estado aux = Automata.getEstados(i).getTransicion(j);
                 int numeroEstado= buscarEstado(aux);
                 g.setColor(color[j]);
-                g.drawLine(a[i].x, a[i].y, b[numeroEstado].x, b[numeroEstado].y);
+                
+                if (i == numeroEstado) {    // Se dibuja un círculo
+                    contLlegada++;
+                    int radio = 10+4*contLlegada;
+                    g.drawArc(a[i].x-radio/2, a[i].y-2*radio, radio, 2*radio, -85, 300);
+                } else {
+                    g.drawLine(a[i].x, a[i].y, b[numeroEstado].x, b[numeroEstado].y);
+                }
                 g.drawString(Automata.getAlfabeto()[j], 10+(j*10), 60);
             }
         }

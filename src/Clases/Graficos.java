@@ -274,12 +274,23 @@ class IOGraficos  extends JPanel{
      */
     private void dibujarTransiciones(Graphics g){
         definirColores();
+        // Cuando se da el caso de que un estado apunta a sí mismo, se dibuja un círuculo que es tangente al punto del
+        // circuloSuperior
+        // Variable que servirá para determinar el tamaño de las secciones de óvalos que se dibujarán para las transiciones hacia el mismo estado
+        int contLlegada = 0;
         for (int i = 0; i < cantidadEstados; i++) {
             for (int j = 0; j < alfabeto.length; j++) {
                 Estado aux = estados[i].getTransicion(j);
                 int numeroEstado= buscarEstado(aux);
                 g.setColor(colores[j]);
-                g.drawLine(circuloSuperior[i].x, circuloSuperior[i].y, circuloInferior[numeroEstado].x, circuloInferior[numeroEstado].y);
+                if (i == numeroEstado) {    // Se dibuja un círculo
+                    contLlegada++;
+                    int radio = 10+4*contLlegada;
+//                    g.drawOval(circuloSuperior[i].x-radio, circuloSuperior[i].y-2*radio, 2*radio, 2*radio);
+                    g.drawArc(circuloSuperior[i].x-radio/2, circuloSuperior[i].y-2*radio, radio, 2*radio, -85, 300);
+                } else {
+                    g.drawLine(circuloSuperior[i].x, circuloSuperior[i].y, circuloInferior[numeroEstado].x, circuloInferior[numeroEstado].y);
+                }
                 g.drawString(alfabeto[j], 10+(j*10), y-40);
             }
         }

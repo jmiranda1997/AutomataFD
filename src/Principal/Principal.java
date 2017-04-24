@@ -320,10 +320,6 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
-        txt_expresion1.setEnabled(false);
-
-        txt_expresion2.setEnabled(false);
-
         jButton1.setText("Expresión");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -434,8 +430,8 @@ public class Principal extends javax.swing.JFrame {
                                 .addComponent(mover_G1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(minimizar_G1, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(txt_expresion1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Grafico1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(Grafico1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)
+                    .addComponent(txt_expresion1, javax.swing.GroupLayout.Alignment.LEADING))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -686,12 +682,9 @@ public class Principal extends javax.swing.JFrame {
 
     private void Probar_G1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Probar_G1ActionPerformed
         String cadena = cadena_G1.getText();
-        if(Lista_Automatas.get(pos_G1).probarCadena(cadena)==true){
-            JOptionPane.showMessageDialog(this, "La cadena pertenece al lenguaje", "Aviso", JOptionPane.INFORMATION_MESSAGE, null);
-        }
-        else{
-            JOptionPane.showMessageDialog(this, "La cadena no pertenece al lenguaje", "Aviso", JOptionPane.INFORMATION_MESSAGE, null);
-        }
+        boolean cadenaValida = Lista_Automatas.get(pos_G1).probarCadena(cadena);
+        JOptionPane.showMessageDialog(this, "La cadena "+((cadenaValida)?"":"NO")+" pertenece al lenguaje", "Aviso",
+                ((cadenaValida) ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE));
     }//GEN-LAST:event_Probar_G1ActionPerformed
 
     private void probar_G2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_probar_G2ActionPerformed
