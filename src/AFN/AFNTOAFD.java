@@ -70,7 +70,7 @@ public final class AFNTOAFD {
         int contEstados = 0, contTE = 0;
         boolean Fin = true, sumindero = false;
         String Sumidero="";
-        conjuntoTemp = estadosAFN[0].getTransicionesNulas();
+        conjuntoTemp = estadosAFN[0].getCerradura();
         estados.add(new ConjuntosEstadosAFN("E" + contEstados,  conjuntoTemp, esFinal(conjuntoTemp)));
         
         contTE++;
@@ -157,30 +157,30 @@ public final class AFNTOAFD {
         
         return nuevoArray;
     }*/
-    
     private ArrayList<EstadoAFN> transiciones(ConjuntosEstadosAFN conjunto, int index){
         ArrayList<EstadoAFN> nuevoArray = new ArrayList<EstadoAFN>(), AUX;
         
         AUX = conjunto.getEstados();
         
         for (EstadoAFN Estados1 : AUX){
-            ArrayList<EstadoAFN> nulas = Estados1.getTransicionesNulas();
+           
             ArrayList<EstadoAFN> AUX2 = Estados1.getTransiciones(index);
             if (AUX2 != null){
                 for (EstadoAFN AUX21 : AUX2) {
                     if(!nuevoArray.contains(AUX21)) nuevoArray.add(AUX21);
+                     ArrayList<EstadoAFN> nulas = AUX21.getCerradura();
+                      for(EstadoAFN nulas1 : nulas){
+                        if (!nuevoArray.contains(nulas1)) {
+                            nuevoArray.add(nulas1);
+                        }
+                    }
                 }
             }
-            for(EstadoAFN nulas1 : nulas){
-                if (!nuevoArray.contains(nulas1)) {
-                    nuevoArray.add(nulas1);
-                }
-            
-        }
         }
         
         return nuevoArray;
     }
+    
     
     private String busqueda(ArrayList<EstadoAFN> Estados){
         for (int cont = 0; cont < estados.size(); cont++){

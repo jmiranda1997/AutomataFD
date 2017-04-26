@@ -127,7 +127,7 @@ public class Ventana extends javax.swing.JFrame {
         validador.generarGrupos();
         System.out.println("Resultado = "+validador.toString());
         System.out.println("***************************************************** FIN DE LA IMPRESIÓN");
-        AutomataAFN = new AFN(new String[]{"a","b","c"});
+        AutomataAFN = new AFN(new String[]{"a","b"});
         AutomataAFN = AutomataAFN.crearAutomata(validador.getGrupo());
         AutomataAFN.iniciarAutomata();
         
