@@ -118,6 +118,7 @@ public class Ventana extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void evaluar_expresion_regularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_evaluar_expresion_regularActionPerformed
+
        try {
            validador.setAlfabeto(new String[]{"a","b","c","d"});
             validador.validarER(campo_expresion.getText());
@@ -135,6 +136,7 @@ public class Ventana extends javax.swing.JFrame {
             
         
         /*AutomataAFN = new AFN(new String[]{"a","b"});
+
         AutomataAFN = AutomataAFN.crearAutomata(validador.getGrupo());
         
         AFNTOAFD transformador = new AFNTOAFD(AutomataAFN);

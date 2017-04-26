@@ -157,7 +157,6 @@ public final class AFNTOAFD {
         
         return nuevoArray;
     }*/
-    
     private ArrayList<EstadoAFN> transiciones(ConjuntosEstadosAFN conjunto, int index){
         ArrayList<EstadoAFN> nuevoArray = new ArrayList<EstadoAFN>(), AUX;
         
@@ -179,6 +178,7 @@ public final class AFNTOAFD {
         
         return nuevoArray;
     }
+    
     
     private String busqueda(ArrayList<EstadoAFN> Estados){
         for (int cont = 0; cont < estados.size(); cont++){
