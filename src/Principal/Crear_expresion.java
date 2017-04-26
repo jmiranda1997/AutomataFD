@@ -7,7 +7,10 @@ package Principal;
 
 import AFN.AFN;
 import Clases.Automata;
+import Excepciones.ExcepcionDatosIncorrectos;
 import ExpresionRegular.ExpresionRegular;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -82,8 +85,15 @@ public class Crear_expresion extends javax.swing.JDialog {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
        String expresion = jTextField1.getText().trim();
        if(expresion.length()>0){
-           ExpresionRegular a = new ExpresionRegular(expresion);
-           boolean correcto = a.validarER(expresion);
+           ExpresionRegular a = new ExpresionRegular();
+           boolean correcto;
+           try {
+               a.validarER(expresion);
+               correcto = true;
+           } catch (ExcepcionDatosIncorrectos ex) {
+               Logger.getLogger(Crear_expresion.class.getName()).log(Level.SEVERE, null, ex);
+               correcto = false;
+           }
            if(correcto){
                a.generarGrupos();
                AFN no_determinista = new AFN();

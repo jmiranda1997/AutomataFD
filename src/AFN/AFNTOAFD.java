@@ -169,11 +169,9 @@ public final class AFNTOAFD {
                 for (EstadoAFN AUX21 : AUX2) {
                     if(!nuevoArray.contains(AUX21)) nuevoArray.add(AUX21);
                      ArrayList<EstadoAFN> nulas = AUX21.getCerradura();
-                      for(EstadoAFN nulas1 : nulas){
-                        if (!nuevoArray.contains(nulas1)) {
-                            nuevoArray.add(nulas1);
-                        }
-                    }
+                     for(EstadoAFN nulas1 : nulas){
+                         if(!nuevoArray.contains(nulas1))nuevoArray.add(nulas1);
+                     }
                 }
             }
         }

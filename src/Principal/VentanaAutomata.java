@@ -8,6 +8,7 @@ import AFN.AFN;
 import AFN.AFNTOAFD;
 import Clases.Automata;
 import Clases.Estado;
+import Excepciones.ExcepcionDatosIncorrectos;
 import ExpresionRegular.ExpresionRegular;
 import java.awt.Frame;
 import java.awt.GridLayout;
@@ -18,6 +19,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 /**
  *
@@ -331,22 +334,23 @@ public class VentanaAutomata implements ActionListener {
                     nuevo = a.getAutomata();
                     ventana.dispose();
                 }else{
+                    // AQUÍ SE CREA EL AUTÓMATA FINITO NO DETERMINISTA A PARTIR DE LA EXPRESIÓN REGULAR!!!!!!!!!!!!!!!!!!!!!!!!!!1
                     alfabeto = new String[cantidadSimbolos];
                     for(int cont=0; cont<cantidadSimbolos; cont++)
                     alfabeto[cont] = cajas_alfabeto[cont].getText();
-                    ExpresionRegular a = new ExpresionRegular(Expresion);
-                    boolean correcto = a.validarER(Expresion);
-                    if(correcto){
-                        a.generarGrupos();
+                    try {
+                        ExpresionRegular validador = new ExpresionRegular();
+                        validador.validarER(Expresion);
+                        validador.generarGrupos();
                         AFN no_det = new AFN(alfabeto);
-                        no_det = no_det.crearAutomata(a.getGrupo());
+                        no_det.crearAutomata(validador.getGrupo());
                         AFNTOAFD aux = new AFNTOAFD(no_det);
                         nuevo = aux.getAutomata();
                         ventana.dispose();
-                    }else{
+                    } catch (ExcepcionDatosIncorrectos ex) {
+                        Logger.getLogger(VentanaAutomata.class.getName()).log(Level.SEVERE, null, ex);
                         ventana.dispose();
                     }
-                    
                 }
             }
         }

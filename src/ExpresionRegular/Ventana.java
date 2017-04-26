@@ -6,11 +6,11 @@
 package ExpresionRegular;
 
 import AFN.*;
-import Clases.Automata;
-import Clases.Graficos;
-import Clases.ManejoArchivo;
-import java.util.ArrayList;
-import java.util.Arrays;
+import Excepciones.ExcepcionAutomataIncorrecto;
+import Excepciones.ExcepcionCadenaNoValida;
+import Excepciones.ExcepcionDatosIncorrectos;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -25,7 +25,7 @@ public class Ventana extends javax.swing.JFrame {
      */
     public Ventana() {
         initComponents();
-        validador = new ExpresionRegular("");
+        validador = new ExpresionRegular();
     }
 
     /**
@@ -41,8 +41,8 @@ public class Ventana extends javax.swing.JFrame {
         evaluar_expresion_regular = new javax.swing.JButton();
         campo_expresion = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        evaluar_transicion = new javax.swing.JButton();
-        campo_transicion = new javax.swing.JTextField();
+        evaluar_cadena = new javax.swing.JButton();
+        campo_cadena = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -60,17 +60,17 @@ public class Ventana extends javax.swing.JFrame {
         campo_expresion.setFont(new java.awt.Font("Courier New", 1, 14)); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel2.setText("Símbolo:");
+        jLabel2.setText("Cadena:");
 
-        evaluar_transicion.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
-        evaluar_transicion.setText("Transición");
-        evaluar_transicion.addActionListener(new java.awt.event.ActionListener() {
+        evaluar_cadena.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        evaluar_cadena.setText("Evaluar");
+        evaluar_cadena.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                evaluar_transicionActionPerformed(evt);
+                evaluar_cadenaActionPerformed(evt);
             }
         });
 
-        campo_transicion.setFont(new java.awt.Font("Courier New", 1, 14)); // NOI18N
+        campo_cadena.setFont(new java.awt.Font("Courier New", 1, 14)); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -90,10 +90,10 @@ public class Ventana extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campo_transicion, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(campo_cadena, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(201, 201, 201)
-                        .addComponent(evaluar_transicion)))
+                        .addComponent(evaluar_cadena)))
                 .addContainerGap(59, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -108,9 +108,9 @@ public class Ventana extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(campo_transicion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(campo_cadena, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(evaluar_transicion)
+                .addComponent(evaluar_cadena)
                 .addContainerGap(120, Short.MAX_VALUE))
         );
 
@@ -118,18 +118,26 @@ public class Ventana extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void evaluar_expresion_regularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_evaluar_expresion_regularActionPerformed
-        boolean valido = validador.validarER(campo_expresion.getText());
-        JOptionPane.showMessageDialog(this,
-                "La cadena '"+campo_expresion.getText()+"' "+ ((valido) ? "SI" : "NO") + " es válida.",
-                "Resultado",
-                (valido) ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
-        System.out.println("============== SE IMPRIMIRÁ UNA EXPRESIÓN REGULAR COMPLETA");
-        validador.generarGrupos();
-        System.out.println("Resultado = "+validador.toString());
-        System.out.println("***************************************************** FIN DE LA IMPRESIÓN");
-        AutomataAFN = new AFN(new String[]{"a","b"});
+
+       try {
+           validador.setAlfabeto(new String[]{"a","b","c","d"});
+            validador.validarER(campo_expresion.getText());
+            System.out.println("============== SE IMPRIMIRÁ UNA EXPRESIÓN REGULAR COMPLETA");
+            validador.generarGrupos();
+            System.out.println("Resultado = "+validador.toString());
+            System.out.println("***************************************************** FIN DE LA IMPRESIÓN");
+            JOptionPane.showMessageDialog(this, "La cadena '"+campo_expresion.getText()+"' es válida", "Resultado", JOptionPane.INFORMATION_MESSAGE);
+            
+            AutomataAFN = new AFN(validador.getGrupo(), validador.getAlfabeto());
+        } catch (ExcepcionDatosIncorrectos ex) {
+            Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "La cadena '"+campo_expresion.getText()+"' NO es válida", "Resultado", JOptionPane.ERROR_MESSAGE);
+        }
+            
+        
+        /*AutomataAFN = new AFN(new String[]{"a","b"});
+
         AutomataAFN = AutomataAFN.crearAutomata(validador.getGrupo());
-        AutomataAFN.iniciarAutomata();
         
         AFNTOAFD transformador = new AFNTOAFD(AutomataAFN);
         
@@ -137,18 +145,18 @@ public class Ventana extends javax.swing.JFrame {
         
         AutomataAFD.setNombre("AFNTOAFD");
         
-        new Graficos(AutomataAFD, ManejoArchivo.CARPETA_IMAGENES + ManejoArchivo.SEPARADOR + AutomataAFD.getNombre()+ ".png");
+        new Graficos(AutomataAFD, ManejoArchivo.CARPETA_IMAGENES + ManejoArchivo.SEPARADOR + AutomataAFD.getNombre()+ ".png");*/
     }//GEN-LAST:event_evaluar_expresion_regularActionPerformed
 
-    private void evaluar_transicionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_evaluar_transicionActionPerformed
-        String caracter = campo_transicion.getText();
-        EstadoAFN resultante = AutomataAFN.getEstadoAutomata(caracter);
-        if (resultante == null)
-            JOptionPane.showMessageDialog(this, "El caracter '"+caracter+"' no existe en el alfabeto", "Error", JOptionPane.ERROR_MESSAGE);
-        else {
-            System.out.println("Estado: "+resultante.getNombre());
+    private void evaluar_cadenaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_evaluar_cadenaActionPerformed
+        try {
+            String cadena = campo_cadena.getText();
+            AutomataAFN.probarCadena(cadena);
+            JOptionPane.showMessageDialog(this, "La cadena SI pertenece al lenguaje", "Resultado", JOptionPane.INFORMATION_MESSAGE);
+        } catch (ExcepcionCadenaNoValida | ExcepcionAutomataIncorrecto ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Resultado", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_evaluar_transicionActionPerformed
+    }//GEN-LAST:event_evaluar_cadenaActionPerformed
     private boolean validar() {
         boolean valido = false;
         String cadena = evaluar_expresion_regular.getText();
@@ -197,10 +205,10 @@ public class Ventana extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField campo_cadena;
     private javax.swing.JTextField campo_expresion;
-    private javax.swing.JTextField campo_transicion;
+    private javax.swing.JButton evaluar_cadena;
     private javax.swing.JButton evaluar_expresion_regular;
-    private javax.swing.JButton evaluar_transicion;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     // End of variables declaration//GEN-END:variables
