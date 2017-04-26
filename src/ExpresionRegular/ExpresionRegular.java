@@ -7,82 +7,125 @@ package ExpresionRegular;
 
 import java.util.ArrayList;
 import AFN.*;
+import Excepciones.ExcepcionDatosIncorrectos;
 
 /**
- *
+ * Clase que modela un validador para Expresiones Regulares. Una expresión regular es válida si:
+ * - Su estructura sea correcta.
+ * - Todos sus operandos pertenezcan al alfabeto.
+ * Implementa un método (que a su vez implementa una excepción) evalúa la validez de una expresión regular. Además, implementa
+ * la clase Grupo el cual es un conjunto estructurado de todos los operandos y operadores de la expresión regular que es
+ * útil para construir un Autómata Finito No Determinista a partir de una Expresión Regular
  * @author Wilson Xicará
  */
 public class ExpresionRegular {
     private String expresionRegular;
-    private boolean cadenaValida;
     private Grupo general;
+    private String[] alfabeto;
     
-    public ExpresionRegular(String cadenaER) {
-        this.expresionRegular = cadenaER;
-        this.cadenaValida = false;
+    public ExpresionRegular() {
+        this.expresionRegular = "";
         this.general = null;
+        this.alfabeto = null;
+    }
+    public ExpresionRegular(String[] alfabeto) {
+        this.expresionRegular = "";
+        this.general = null;
+        this.alfabeto = alfabeto;
     }
     
     public Grupo getGrupo() { return general; }
+    public String[] getAlfabeto() { return alfabeto; }
+    public void setAlfabeto(String[] alfabeto) { this.alfabeto = alfabeto; }
     
-    public boolean validarER(String expresionRegular) {
-        this.expresionRegular = expresionRegular;
-        String cpER = "(" + this.expresionRegular + ")";    // Englobo todo en un sólo operando
-        int nivel = 0, limite = cpER.length(), index = 0;
+    /**
+     * Método que evalúa si una cadena cumple con ser una expresión regular. Para que sea una expresión regular, debe tener
+     * una estructura correcta (que no tenga bloques no válidos), y todos sus operandos deben pertenecer a un alfabeto definido
+     * previamente en este objeto. Para la comprobación, se engloba toda la 'expresionRegular' entre paréntesis (al inicio y
+     * al final) y se analiza de esa forma la estructura de la expresión regular.
+     * Si la cadena es una expresión regular, se agrega en this.expresionRegula.
+     * @param expresionRegular String que se evaluará para determinar si es o no una expresión regular escrita correctamente.
+     * @throws ExcepcionDatosIncorrectos se lanza al detectar una condición que invalida la cadena, indicando el motivo de dicha acción.
+     */
+    public void validarER(String expresionRegular) throws ExcepcionDatosIncorrectos {
+        if (alfabeto == null)
+            throw new ExcepcionDatosIncorrectos("Aún no se ha definido el Alfabeto para validar la Expresión Regular");
+        if (expresionRegular.length() == 0)
+            throw new ExcepcionDatosIncorrectos("La Expresión regular debe contener al menos un símbolo");
+        
+        String cpER = "(" + expresionRegular + ")";    // Englobo todo en un sólo operando
+        int nivel = 0, maximo = cpER.length(), index = 0;
         String caracter = "";
-        boolean forzado = false;
-        while (index < limite) {
+        while (index < maximo) {
             caracter = "" + cpER.charAt(index);
             if ("(".equals(caracter)) {
                 nivel++;
                 index++;
             } else if (")".equals(caracter)) {
                 // Si se tienen los bloques +) o ()
-                forzado = ("+".equals(""+cpER.charAt(index-1)) || "(".equals(""+cpER.charAt(index-1)));
-                nivel--;
-                index++;
-            }
-            // Evalúo que no haya dos operadores consecutivos (el caso *+ si es válido {a*+b})
-            else if ("*".equals(caracter)) {
-                if ("(".equals(""+cpER.charAt(index-1)) || "+".equals(""+cpER.charAt(index-1)) || "*".equals(""+cpER.charAt(index-1))) {
-                    // Si se tienen los bloques no válidos (*, +*, o **
-                    forzado = true;
-                    index = limite;
-                } else
+                if ("+".equals(""+cpER.charAt(index-1)) || "(".equals(""+cpER.charAt(index-1)))
+                    throw new ExcepcionDatosIncorrectos("El bloque "+cpER.charAt(index-1)+caracter+" no es válido");
+                else {
+                    nivel--;
+                    if (nivel < 0)  // En caso de haber cerrado más paréntesis de los abiertos, sin agotar la cadena
+                        throw new ExcepcionDatosIncorrectos("El bloque en la posición "+cpER.charAt(index)+cpER.charAt(index-1)+" de la cadena cierra forzadamente la expresión regular");
+                    else
+                        index++;
+                }
+            } else if ("*".equals(caracter)) {
+                // Evalúo que no haya dos operadores consecutivos (el caso *+ si es válido {a*+b})
+                if ("(".equals(""+cpER.charAt(index-1)) || "+".equals(""+cpER.charAt(index-1)) || "*".equals(""+cpER.charAt(index-1)))
+                    throw new ExcepcionDatosIncorrectos("El bloque "+cpER.charAt(index-1)+caracter+" no es válido");    // Si se tienen los bloques no válidos (*, +*, o **
+                else
                     index++;
             } else if ("+".equals(caracter)) {
-                if ("(".equals(""+cpER.charAt(index-1)) || "+".equals(""+cpER.charAt(index-1))) {
-                    // Si se tienen los bloques no válidos (+ o ++ (el bloque *+ es válido)
-                    forzado = true;
-                    index = limite;
-                } else
+                // Si se tienen los bloques no válidos (+ o ++ (el bloque *+ es válido)
+                if ("(".equals(""+cpER.charAt(index-1)) || "+".equals(""+cpER.charAt(index-1)))
+                    throw new ExcepcionDatosIncorrectos("El bloque "+cpER.charAt(index-1)+caracter+" no es válido");
+                else
                     index++;
-            } else {
-                index++;
+            } else
+                index++;    // Si no encuentra algún sub bloque incorrecto, se sigue evaluando la cadena
+        }   // Hasta aquí se garantiza que la expresión regular tiene una estructura correcta
+        // En caso de ser válida, evalúo que todos los operandos de la expresión regular estén definidos en el alfabeto
+        index = 0;
+        int contSimbolos = alfabeto.length;
+        while (index < maximo) {    // Mientras no se agote toda la cadena
+            caracter = ""+cpER.charAt(index);   // Obtengo un caracter
+            // Evaluo si caracter pertenece al alfabeto si no es un operando o un signo de agrupación
+            if (!("(".equals(caracter) || ")".equals(caracter) || "+".equals(caracter) || "*".equals(caracter))) {
+                int posEncontrado = 0;
+                for (int i=0; i<contSimbolos; i++) {    // Busco caracter en el alfabeto
+                    if (caracter.equals(alfabeto[i]))
+                        i = contSimbolos;
+                    else
+                        posEncontrado++;
+                }
+                if (posEncontrado == contSimbolos)    // En caso de no pertenencer. La expresión regular no es válida
+                    throw new ExcepcionDatosIncorrectos("El símbolo '"+caracter+"' no está definido en el alfabeto");
             }
-            if (nivel < 0 || forzado) {
-                forzado = true;
-                index = limite;
-            }
+            index++;
         }
-        return !(forzado || nivel != 0);
+        this.expresionRegular = expresionRegular;
     }
+    /**
+     * Método que convierte unaa Expresión Regular válida en un objeto de tipo ExpresionRegular.Grupo el cual sirve para
+     * construir un Autómata Finito No Determinista desde dicha expresión.
+     * Este método debe utilizarse en conjunto a validarER(String expresionRegular) ya que si la cadena no es una
+     * expresión regular válida puede generar problemas al crear los grupos y al constrir el Autómata.
+     */
     public void generarGrupos() {
-        /* Previo a iniciar, la expresión regular tiene el formato (expresionRegular) con paréntesis al inicio y al final.
-           Dichos paréntesis me servirán para identificar el inicio y fin de toda la expresión.
-           Al llamar a esta función, se asume que this.expresionRegular es válida */
+        // Englobo la expresión regular en paréntesis ya que servirán para identificar el inicio y fin de toda la expresión.
+        // Al llamar a esta función, se asume que this.expresionRegular es válida.
         String cpER = "("+expresionRegular+")";
         int fila = 0;
         int  maximo = cpER.length();
         int index = 0;  // La expresión regular ya no está encerrada en paréntesis que la engloban
         this.general = new Grupo();
         String caracter = "";
-        
-        /* Este ArrayList puede interpretarse como una matriz cuadrada (aunque no necesariamente de mxn).
-           En ella, 'nivel' lleva el contador de las filas y 'conteo' lleva el contador de las columnas */
+        // Este ArrayList puede interpretarse como una matriz cuadrada (aunque no necesariamente de mxn).
         ArrayList<ArrayList<Grupo>> pilaGrupos = new ArrayList<>();
-//        ArrayList<Grupo> primerArray = new ArrayList<>();
-        pilaGrupos.add(new ArrayList<Grupo>());    // Para poder utilizar la pilaGrupos
+        pilaGrupos.add(new ArrayList<>());    // Para poder utilizar la pilaGrupos
         
         while (index < maximo) {    // Mientras no se agote la cadena
             /* Se reinicia este ciclo siempre que se crea un nuevo grupo en el nivel en el que indica 'fila' */
@@ -90,7 +133,7 @@ public class ExpresionRegular {
             caracter = "" + cpER.charAt(index);
             if ("(".equals(caracter)) { // Implica que se creará un nuevo grupo. Agrego un preOperador del grupo
                 pilaGrupos.get(fila).add(nuevo);    // Agrego el nuevo grupo en la 'fila' que le corresponde
-                pilaGrupos.add(new ArrayList<Grupo>()); // Agrego lo que será los grupos de nuevo
+                pilaGrupos.add(new ArrayList<>()); // Agrego lo que será los grupos de nuevo
                 // Defino el preOperador de nuevo
                 int conteo = pilaGrupos.get(fila).size() - 1; // Existe por lo menos un elemento
                 nuevo.setPreOperador((conteo > 0) ? pilaGrupos.get(fila).get(conteo-1).getPostOperador(): "");
@@ -151,14 +194,18 @@ public class ExpresionRegular {
             // Previo a reiniciar el grupo, index ya está sobre un caracter que no sea '+'
         }
         this.general = pilaGrupos.get(0).get(0);
-        /* Hasta este punto, ya se han creado tantos grupos como sean necesarios. Dichos grupos fueron delimitados por
-           paréntesis o por '+' o concatenación, pero de momento cada grupo puede tener más de un símbolo como expresión.
-           Queda pendiente subdividir aún más dichos estados hasta que su expresión sólo contenga un caracter.
-           Los Grupos de los niveles más inferiores (los que tengan su ArrayList == null) son los que aún pueden ser
-           divididos en más estados. Evalúo dichos Grupos y genero la simplificación de la expresión de cada uno. */
-        System.out.println("Resultado previo = "+this.toString());
-        simplificarGrupos(general);
+        // Hasta aquí se garantiza la creación de tantos Grupos como sean necesarios (aunque no simplificados).
+        simplificarGrupos(general); // Simplifico a lo más mínimo todos los grupos creados.
     }
+    /**
+     * Método recursivo que divide un Grupo en varios Grupos en caso de que la porción de la expresión regular que tenga
+     * incluye varios operandos. En generarGrupos() se crearon varios Grupos delimitados por paréntesis o por el operador '+'
+     * pero varios operandos (con cerradura de Kleene inclusive) concatenados pertenecen a un mismo Grupo. Aún está pendiente
+     * subdividir dichos Grupos hasta que su expresión sólo contenga un caracter del alfabeto.
+     * Los Grupos de los niveles más inferiores (los que tengan su ArrayList == null) son los que aún pueden ser
+     * divididos en más Grupos. Evalúo dichos Grupos y genero la simplificación de la expresión de cada uno.
+     * @param padre objeto ExpresionRegular.Grupo general que contiene todos los grupos creados (este es this.general).
+     */
     private void simplificarGrupos(Grupo padre) {
         // La división se hace en el mismo nivel, por lo que se aumentará la cantidad de elementos en el subgrupo y se
         // deberán correr todas las siguientes a la que se evalúa.
@@ -202,6 +249,15 @@ public class ExpresionRegular {
         return cadena;
     }
     
+    /**
+     * Clase que modela una porción de una Expresión Regular.
+     * En esta clase, una expresión regular se modela parecida a un árbol ya que un grupo Padre puede tener cero o más
+     * grupos Hijo. Para ello, cada grupo tiene un atributo para la porción de la expresión regular (que debe ser un sólo
+     * operando), las operaciones que dicho grupo está realizando con los grupos anterior y siguiente a él, un atributo que
+     * indica si todo el grupo tiene Cerradura de Kleene, un ArrayList<Grupo> de más Grupos (que en conjunto forma el Grupo
+     * this), y punteros al EstadoAFN anterior y siguiente al Grupo actual (utilizado a la hora de construir el Autómata Finito
+     * No Determinista).
+     */
     public class Grupo {
         private String expresion;
         private String preOperador, postOperador;
@@ -213,9 +269,6 @@ public class ExpresionRegular {
             expresion = preOperador = postOperador = repeticion = "";
             grupos = null;
             anterior = siguiente = null;
-        }
-        public void iniciarGrupo() {
-            grupos = new ArrayList<Grupo>();
         }
         
         public String getExpresion() { return expresion; }
@@ -250,64 +303,5 @@ public class ExpresionRegular {
         public void addGrupos(ArrayList<Grupo> grupos) { this.grupos = grupos; }
         public void setAnterior(EstadoAFN anterior) { this.anterior = anterior; }
         public void setSiguiente(EstadoAFN siguiente) { this.siguiente = siguiente; }
-        
-        public int generarGrupos(int posActual, int maximo, String cadena) {
-            grupos = new ArrayList<>(); // Inicializo el ArrayList
-            String simbolo;
-            int contGrupos = 0;
-            boolean regresar = false;
-            while (!regresar) { // Si entra a este método, por lo menos se agregará un grupo a 'grupos'
-                simbolo = ""+cadena.charAt(posActual);
-                Grupo nuevo = null;  // Inicializo un nuevo grupo que contendrá la expresión que se leerá
-                if ("(".equals(simbolo)) {
-                    nuevo = new Grupo();
-                    // SE CREARÁ UN NUEVO GRUPO, lo que implica una nueva llamada a este método recursivo
-                    posActual = nuevo.generarGrupos(posActual+1, maximo, cadena);
-                    // Al regresar, posActual está hasta donde terminó el grupo anterior, y le sigue un operador o un operando
-                } else if (")".equals(simbolo)) {
-                    // Se cerrará el grupo actual.
-                    regresar = true;
-                } else {    // Pueden suceder serie de caracteres concatenados, o separados por +
-                    nuevo = new Grupo();
-                    boolean pasar = false;
-                    while (!pasar) {    // Se leerá un bloque de la ER que contenga la misma operación (de concatenación)
-                        simbolo = ""+cadena.charAt(posActual);
-                        if ("+".equals(simbolo) || ")".equals(simbolo)) {
-                            pasar = true;
-                            if (")".equals(simbolo)) {
-                                if ((posActual+1) < maximo) {
-                                    posActual++;
-                                    simbolo = "" + cadena.charAt(posActual);
-                                    regresar = true;
-                                }
-                            }
-                        } else {    // Hay operación de concatenación
-                            nuevo.setPedazoExpresion(simbolo);    // Agrego el operando a nuevo
-                            posActual++;
-                            simbolo = "" + cadena.charAt(posActual);
-                        }
-                    }   // Sale de este ciclo sí y sólo sí se ha encontrado un + (ya se ha cargado un grupo a nuevo)
-                    
-                    // Inserto el preOperador de nuevo
-                    nuevo.setPreOperador((contGrupos > 0) ? grupos.get(contGrupos-1).getPostOperador() : "");
-                    // Inserto el postOperador de nuevo. Si sale del ciclo por encontrar ')', no tienen postOperador
-                    if ("+".equals(simbolo)) {
-                        nuevo.setPostOperador("+");
-                        posActual++;
-                    }   // En caso contrario, se queda sin postOperador
-                }
-                if (nuevo != null)
-                    grupos.add(nuevo);
-                contGrupos = grupos.size();
-            }   // Al salir de este while, ya se puede hacer el cierre del grupo
-            // Evalúo la repetición de este grupo
-            if ((posActual+1) < maximo) {   // Aún hay más caracteres
-                if ("*".equals(""+cadena.charAt(posActual+1))) {
-                    this.setRepeticion("*");    // Si es que el grupo actual tiene cerradura de Kleen
-                    posActual++;
-                }
-            }
-            return posActual;
-        }
     }
 }

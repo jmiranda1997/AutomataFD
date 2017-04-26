@@ -17,8 +17,7 @@ import java.util.ArrayList;
  */
 public class EstadoAFN {
     private boolean aceptable;
-    private ArrayList[] transiciones;
-//    private ArrayList<EstadoAFN[]> transiciones;
+    private ArrayList<EstadoAFN>[] transiciones;
     private String nombre;
 
     /**
@@ -37,7 +36,7 @@ public class EstadoAFN {
         this.aceptable = false;
         this.transiciones = new ArrayList[cantidadSimbolos + 1];
         for(int i=0; i<=cantidadSimbolos; i++)
-            this.transiciones[i] = new ArrayList<EstadoAFN>(); // Agrego las 'cantidadSimbolos + 1' filas que tendrá el estado (no inicializo los arreglos)
+            this.transiciones[i] = new ArrayList<>(); // Agrego las 'cantidadSimbolos + 1' filas que tendrá el estado (no inicializo los arreglos)
         /* Las transiciones para el caracter nulo se encontrarán en la última posición del arreglo */
     }
 
@@ -54,14 +53,14 @@ public class EstadoAFN {
      * @param indexTransicion entero que indica a cual de todas las transiciones asociadas al caracter se hace referencia.
      * @return la 'indexTransicion' transición asociada al caracter 'alfabeto[indexSimbolo]' cuando se está en this (el estado actual).
      */
-    public EstadoAFN getTransicion(int indexSimbolo, int indexTransicion) { return (EstadoAFN)transiciones[indexSimbolo].get(indexTransicion); }
+    public EstadoAFN getTransicion(int indexSimbolo, int indexTransicion) { return transiciones[indexSimbolo].get(indexTransicion); }
     /**
      * Función que devuelve la index-ésima transición del estado actual con la cadena vacía.
      * @param index entero que identifica a cuál de todos los estados a los que se puede llegar, desde el estado actual, con
      * la cadena vacía se quiere acceder.
      * @return el estado específico al que se accede desde el estado actual con la cadena vacía.
      */
-    public EstadoAFN getTransicionNula(int index) { return (EstadoAFN)this.transiciones[this.transiciones.length-1].get(index); }
+    public EstadoAFN getTransicionNula(int index) { return this.transiciones[this.transiciones.length-1].get(index); }
     /**
      * Función que devuelve todas las transiciones asociadas al símbolo 'alfabeto[index]' pertenecientes a este EstadoAFN.
      * @param indexSimbolo entero que indica el índice del símbolo dentro del alfabeto.
@@ -72,19 +71,19 @@ public class EstadoAFN {
      * Función que devuelve todas las transiciones asociadas a la cadena vacía pertenecientes a este EstadoAFN.
      * @return el arreglo de transiciones (que son otros estados) asociados a la cadena vacía.
      */
+    public ArrayList<EstadoAFN> getTransicionesNulas() { return this.transiciones[this.transiciones.length-1]; }
     public ArrayList<EstadoAFN> cerradura;
-    public ArrayList<EstadoAFN> getTransicionesNulas() { 
-         cerradura = new ArrayList<EstadoAFN>();
+    public ArrayList<EstadoAFN> getCerradura(){
+     cerradura = new ArrayList<EstadoAFN>();
          
          ArrayList<EstadoAFN> aux = this.transiciones[this.transiciones.length-1];
          cerraduraKleen(aux);
          
          if(!cerradura.contains(this)) cerradura.add(this);
          
-         return cerradura;
-         
-        //return this.transiciones[this.transiciones.length-1]; }
+         return cerradura;   
     }
+    
     private void cerraduraKleen(ArrayList<EstadoAFN> Array){
          if(!Array.isEmpty()) {
             for(EstadoAFN aux : Array) {
