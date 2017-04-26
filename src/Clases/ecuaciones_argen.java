@@ -151,7 +151,7 @@ public final class ecuaciones_argen {
                     String[] Estado2 = Combinar.getEstado();
                     int aux=0;
                     for (int j = 0; j < Simbolo2.length; j++) {
-                        Simbolo2[j] =    agregar + Simbolo2[j];    
+                        Simbolo2[j] =    agregar +"("+ Simbolo2[j]+")";    
                     }
                     ArrayList<String> Nuevo_Estado = new ArrayList<String>();
                     ArrayList<String> Nuevo_Simbolo = new ArrayList<String>();
