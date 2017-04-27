@@ -34,7 +34,7 @@ public class Principal extends javax.swing.JFrame {
     int pos_G1=0, pos_G2=0, cadena1=0, cadena2=0;
     Graficos G1,G2;
     JTextField[] cajas = new JTextField[5];
-    Ventana_crear_Automata aux;
+    Ventanas.Ventana_crear_automata aux;
     ArrayList<Automata> Lista_Automatas;
     ArrayList<String> posiciones_no_guardados,alfabeto_G1,alfabeto_G2, indices;
     ArrayList<Graficos> Graficos_Automatas;
@@ -153,13 +153,12 @@ public class Principal extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         menu_opcciones = new javax.swing.JMenu();
         Nuevo_automata = new javax.swing.JMenuItem();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        abrir_automata = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
         Importar_automata = new javax.swing.JMenuItem();
         exportar_automata = new javax.swing.JMenuItem();
         exportar_automata_imagen = new javax.swing.JMenuItem();
+        abrir_automata = new javax.swing.JMenuItem();
 
         jMenuItem2.setText("jMenuItem2");
 
@@ -336,29 +335,13 @@ public class Principal extends javax.swing.JFrame {
 
         menu_opcciones.setText("Opcciones");
 
-        Nuevo_automata.setText("Nuevo Automata");
+        Nuevo_automata.setText("Nuevo Autómata Finito");
         Nuevo_automata.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 Nuevo_automataActionPerformed(evt);
             }
         });
         menu_opcciones.add(Nuevo_automata);
-
-        jMenuItem1.setText("Expresion Regular");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
-            }
-        });
-        menu_opcciones.add(jMenuItem1);
-
-        abrir_automata.setText("Abrir Automata");
-        abrir_automata.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                abrir_automataActionPerformed(evt);
-            }
-        });
-        menu_opcciones.add(abrir_automata);
 
         jMenuItem3.setText("Guardar Todo");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
@@ -372,7 +355,7 @@ public class Principal extends javax.swing.JFrame {
 
         jMenu1.setText("Archivo");
 
-        Importar_automata.setText("Importar Automata");
+        Importar_automata.setText("Importar Autómata FD");
         Importar_automata.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 Importar_automataActionPerformed(evt);
@@ -380,7 +363,7 @@ public class Principal extends javax.swing.JFrame {
         });
         jMenu1.add(Importar_automata);
 
-        exportar_automata.setText("Exportar Automata");
+        exportar_automata.setText("Exportar Autómata FD");
         exportar_automata.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportar_automataActionPerformed(evt);
@@ -388,13 +371,21 @@ public class Principal extends javax.swing.JFrame {
         });
         jMenu1.add(exportar_automata);
 
-        exportar_automata_imagen.setText("Exportar Automata como Imagen");
+        exportar_automata_imagen.setText("Exportar Autómata FD como Imagen");
         exportar_automata_imagen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportar_automata_imagenActionPerformed(evt);
             }
         });
         jMenu1.add(exportar_automata_imagen);
+
+        abrir_automata.setText("Abrir Autómata FD");
+        abrir_automata.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                abrir_automataActionPerformed(evt);
+            }
+        });
+        jMenu1.add(abrir_automata);
 
         jMenuBar1.add(jMenu1);
 
@@ -534,7 +525,8 @@ public class Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void Nuevo_automataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Nuevo_automataActionPerformed
-        aux = new Ventana_crear_Automata();
+        aux = new Ventanas.Ventana_crear_automata(this, true);
+        aux.setVisible(true);
         if(aux.getAutomata()!=null){
           if(aux.getAutomata().getNuevo() !=null){
               Automata nuevo = aux.getAutomata().getNuevo();
@@ -1037,10 +1029,6 @@ public class Principal extends javax.swing.JFrame {
 
     }//GEN-LAST:event_Automatas1ComponentRemoved
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         txt_expresion1.setText(Lista_Automatas.get(pos_G1).Expresion_Regular());
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -1113,7 +1101,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JScrollPane jScrollPane1;
