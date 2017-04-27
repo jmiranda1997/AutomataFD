@@ -34,9 +34,18 @@ public class ExpresionRegular {
         this.alfabeto = alfabeto;
     }
     
-    public Grupo getGrupo() { return general; }
     public String[] getAlfabeto() { return alfabeto; }
+    public Grupo getGrupo() { return general; }
+    
     public void setAlfabeto(String[] alfabeto) { this.alfabeto = alfabeto; }
+    public void setExpresionRegular(String expresionRegular) throws ExcepcionDatosIncorrectos {
+        // Primero evalúo que la Expresión Regular tenga una estructura correcta
+        validarEstructuraER(expresionRegular);
+        // Seguidamente evalúo que todos los operandos sean símbolos del alfabeto
+        validarOperandosER(expresionRegular);
+        // Si todo es correcto, la Expresión Regular es correcta y la guardo
+        this.expresionRegular = expresionRegular;
+    }
     
     /**
      * Método que evalúa si una cadena cumple con ser una expresión regular. Para que sea una expresión regular, debe tener
@@ -47,9 +56,7 @@ public class ExpresionRegular {
      * @param expresionRegular String que se evaluará para determinar si es o no una expresión regular escrita correctamente.
      * @throws ExcepcionDatosIncorrectos se lanza al detectar una condición que invalida la cadena, indicando el motivo de dicha acción.
      */
-    public void validarER(String expresionRegular) throws ExcepcionDatosIncorrectos {
-        if (alfabeto == null)
-            throw new ExcepcionDatosIncorrectos("Aún no se ha definido el Alfabeto para validar la Expresión Regular");
+    public static void validarEstructuraER(String expresionRegular) throws ExcepcionDatosIncorrectos {
         if (expresionRegular.length() == 0)
             throw new ExcepcionDatosIncorrectos("La Expresión regular debe contener al menos un símbolo");
         
@@ -87,8 +94,13 @@ public class ExpresionRegular {
             } else
                 index++;    // Si no encuentra algún sub bloque incorrecto, se sigue evaluando la cadena
         }   // Hasta aquí se garantiza que la expresión regular tiene una estructura correcta
+    }
+    private void validarOperandosER(String cadena)  throws ExcepcionDatosIncorrectos {
+        if (alfabeto == null)
+            throw new ExcepcionDatosIncorrectos("Aún no se ha definido el Alfabeto para validar la Expresión Regular");
         // En caso de ser válida, evalúo que todos los operandos de la expresión regular estén definidos en el alfabeto
-        index = 0;
+        int index = 0, maximo = cadena.length();
+        String cpER = cadena, caracter;
         int contSimbolos = alfabeto.length;
         while (index < maximo) {    // Mientras no se agote toda la cadena
             caracter = ""+cpER.charAt(index);   // Obtengo un caracter
@@ -106,13 +118,12 @@ public class ExpresionRegular {
             }
             index++;
         }
-        this.expresionRegular = expresionRegular;
     }
     /**
      * Método que convierte unaa Expresión Regular válida en un objeto de tipo ExpresionRegular.Grupo el cual sirve para
      * construir un Autómata Finito No Determinista desde dicha expresión.
-     * Este método debe utilizarse en conjunto a validarER(String expresionRegular) ya que si la cadena no es una
-     * expresión regular válida puede generar problemas al crear los grupos y al constrir el Autómata.
+     * Este método debe utilizarse en conjunto a validarEstructuraER(String expresionRegular) ya que si la cadena no es una
+ expresión regular válida puede generar problemas al crear los grupos y al constrir el Autómata.
      */
     public void generarGrupos() {
         // Englobo la expresión regular en paréntesis ya que servirán para identificar el inicio y fin de toda la expresión.

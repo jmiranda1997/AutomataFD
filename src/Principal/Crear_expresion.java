@@ -88,7 +88,7 @@ public class Crear_expresion extends javax.swing.JDialog {
            ExpresionRegular a = new ExpresionRegular();
            boolean correcto;
            try {
-               a.validarER(expresion);
+               a.validarEstructuraER(expresion);
                correcto = true;
            } catch (ExcepcionDatosIncorrectos ex) {
                Logger.getLogger(Crear_expresion.class.getName()).log(Level.SEVERE, null, ex);

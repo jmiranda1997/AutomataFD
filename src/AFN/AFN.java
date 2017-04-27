@@ -18,6 +18,9 @@ import java.util.ArrayList;
  * 4) Un determinado conjunto de estados F llamado estados aceptables (donde F es un subconjunto de S, F c S).
  * 5) Una función de estado próximo N:SxI->S que asocia un 'estado siguiente' a cada par ordenado que consiste en un 'estado
  *    presente' y una 'entrada presente'.
+ * Los Estados dentro del AFN se manejan como un arreglo de EstadoAFN, donde estados[0] es el estado inicial. Cada estado
+ * dentro del arreglo se inicializa con 'cantidadSimbolos+1' transiciones (una para cada caracter del alfabeto, más las
+ * transiciones asociadas al caracter nulo).
  * @author Wilson Xicará
  */
 public class AFN {
@@ -28,19 +31,30 @@ public class AFN {
     private boolean estaEnEstadoAceptable;
     
     /**
-     * Constructor que inicializa un Autómata vacío (esto es, un alfabeto vacío y cero estados).
+     * Constructor que inicializa un Autómata Finito No Determinista vacío (esto es, un alfabeto nulo y sin estados).
      */
     public AFN() {
         this.alfabeto = null;
         this.estados = null;
-        this.nombreAFN = "";
         this.cantidadSimbolos = this.cantidadEstados = 0;
+        this.nombreAFN = this.descripcion = null;
+        this.estaEnEstadoAceptable = false;
     }
     /**
-     * Constructor que inicializa un AFN con un alfabeto y con n-estados (según los parámetros, para ambos). Los Estados
-     * dentro del AFN se manejan como un arreglo de EstadoAFN, donde estados[0] es el estado inicial; cada estado dentro
-     * del arreglo se inicializa con 'cantidadSimbolos+1' transiciones (incluido las transiciones para el caracter nulo), todos
-     * apuntado a estados vacíos. En el constructor de cada EstadoAFN se inicializa para contener transiciones con el caracter nulo.
+     * Constructor que inicializa un Autómata Finito No Determinista con un alfabeto específico, sin estados.
+     * @param alfabeto 
+     */
+    public AFN(String[] alfabeto) {
+        this.alfabeto = alfabeto;
+        this.cantidadSimbolos = alfabeto.length;
+        this.estados = null;
+        this.cantidadEstados = 0;
+        this.nombreAFN = this.descripcion = "";
+        this.estaEnEstadoAceptable = false;
+    }
+    /**
+     * Constructor que inicializa un AFN con un alfabeto y con n-estados (según los parámetros, para ambos). Se inicializan
+     * los objetos del arreglo para que puedan contener las transiciones necesarias.
      * @param alfabeto arreglo de String que representa el alfabeto de este Autómata.
      * @param cantidadEstados entero que indica la cantidad de estados que tendrá el Autómata.
      */
@@ -51,9 +65,17 @@ public class AFN {
         this.estados = new EstadoAFN[cantidadEstados];
         for(int i=0; i<cantidadEstados; i++)
             this.estados[i] = new EstadoAFN(this.cantidadSimbolos);
+        this.nombreAFN = this.descripcion = "";
+        this.estaEnEstadoAceptable = false;
     }
-    
-     public AFN(String[] alfabeto, int cantidadEstados, ArrayList<String> nombre_estados) {
+    /**
+     * Constructor que inicializa un AFN con un alfabeto y con n-estados (según los parámetros, para ambos). Se inicializan
+     * los objetos del arreglo para que puedan contener las transiciones necesarias, asignando el nombre que tendrá cada estado.
+     * @param alfabeto arreglo de String que representa el alfabeto de este Autómata.
+     * @param cantidadEstados entero que indica la cantidad de estados que tendrá el Autómata.
+     * @param nombre_estados ArrayList de nombres que se le asignará a los EstadoAFN's.
+     */
+    public AFN(String[] alfabeto, int cantidadEstados, ArrayList<String> nombre_estados) {
         this.alfabeto = alfabeto;
         this.cantidadSimbolos = alfabeto.length;
         this.cantidadEstados = cantidadEstados;
@@ -62,23 +84,21 @@ public class AFN {
             this.estados[i] = new EstadoAFN(this.cantidadSimbolos);
             this.estados[i].setNombre(nombre_estados.get(i));
         }
-    }
-    public AFN(String[] alfabeto) {
-        this.alfabeto = alfabeto;
-        this.cantidadSimbolos = alfabeto.length;
-        this.cantidadEstados = 0;
-        this.estados = null;
+        this.estaEnEstadoAceptable = false;
     }
     /**
-     * Constructor que inicializa el AFN a partir de la expresión regular en grupoER. Este constructor llama al método
-     * construir_automata(ExpresionRegular.Grupo grupoER).
-     * @param grupoER objeto que contiene la expresión regular de la cual se creará el AFN.
+     * Constructor que inicializa un AFN a partir de la expresión regular en 'grupoER'. Este constructor llama al método
+     * construir_automata(ExpresionRegular.Grupo grupoER) que es el encargado de generar nuevamente un AFN. En nuevo AFN
+     * se inicializa con el alfabeto sobre el cual está definido la Expresión Regular.
+     * @param grupoER objeto que contiene la expresión regular estructurada de la cual se creará el AFN.
      * @param alfabeto alfabeto del nuevo autómata (debe ser el mismo alfabeto sobre el que se define la expresión regular).
      */
     public AFN(ExpresionRegular.Grupo grupoER, String[] alfabeto) {
         this.alfabeto = alfabeto;
         this.cantidadSimbolos = alfabeto.length;
         construir_automata(grupoER);
+        this.nombreAFN = this.descripcion = "";
+        this.estaEnEstadoAceptable = false;
     }
 
     public int getCantidadSimbolos() { return cantidadSimbolos; }
@@ -101,16 +121,16 @@ public class AFN {
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     
     /**
-     * Método que inicializa y crea un AFN a partir de una Expresión Regular.
-     * En 'grupo' se encuentra estructurada la expresión regular como un árbol: por niveles y por nodos internos.
-     * Cada grupo contiene un pedazo de expresión regular.
-     * @param grupo
-     * @return 
+     * Método que inicializa y crea un AFN a partir de una Expresión Regular. Dicha expresión regular está estructurada según
+     * el algoritmo en el cual se basará la creación del Autómata. La estructura de la expresión regular en 'grupo' es similar
+     * a un árbol: por niveles y por nodos internos. Cada grupo del nivel más bajo contiene un pedazo de la expresión regular.
+     * @param grupo objeto que tiene una estructura que puede ser reconocida por el algoritmo, sobre la cual se basa la
+     * construcción del Autómata Finito No Determinista a partir de una Expresión Regular.
      */
     private void construir_automata(ExpresionRegular.Grupo grupo) {
-        // Primero obtengo el nodo del nivel más alto y el que está más a la izquierda
-        // Se asume que grupo es un objeto que contiene varios grupos. Inicializo con las operaciones de grupo
-        // Inicializo los estados 'inicial' y 'final'
+        /* Primero obtengo el nodo del nivel más alto y el que está más a la izquierda
+           Se asume que grupo es un objeto que contiene varios grupos. Inicializo los estados 'inicial' y 'final' y las
+           operaciones del grupo del nivel más alto y más a la izquierda sobre las mismas. */
         EstadoAFN primero = new EstadoAFN(cantidadSimbolos), ultimo = new EstadoAFN(cantidadSimbolos);
         primero.setNombre("I");
         ultimo.setNombre("F");
@@ -119,7 +139,7 @@ public class AFN {
         grupo.setAnterior(primero);
         grupo.setSiguiente(ultimo);
         cantidadEstados = 2;    // Conteo de primero y último
-        ArrayList<EstadoAFN> listaEstados = new ArrayList<>();
+        ArrayList<EstadoAFN> listaEstados = new ArrayList<>();  // ArrayList para llevar el conteo de los estados que se crearán
         listaEstados.add(primero);  // Agrego los pirmeros EstadoAFN a la lista de estados
         listaEstados.add(ultimo);
         conectar_expresion_regular(grupo, primero, ultimo, listaEstados);
@@ -130,7 +150,9 @@ public class AFN {
         this.estados[cantidadEstados-1] = listaEstados.remove(0);  // El estado final del autómata
         for (int i=1; i<(cantidadEstados-1); i++)
             this.estados[i] = listaEstados.remove(0);
-        // HASTA AQUÍ SE GARANTIZA LA CREACIÓN DEL AUTÓMATA FINITO NO DETERMINISTA A PARTIR DE LA EXPRESIÓN REGULAR.
+        this.nombreAFN = this.descripcion = "";
+        this.estaEnEstadoAceptable = false;
+        // HASTA AQUÍ SE GARANTIZA LA CREACIÓN DEL AUTÓMATA FINITO NO DETERMINISTA A PARTIR DE UNA EXPRESIÓN REGULAR.
     }
     /**
      * Método que sirve para volver a crear el Autómata Finito No Determinista a partir de una Expresión Regular (estructurada
@@ -144,9 +166,10 @@ public class AFN {
      * Método que crea las conexiones entre la Expresión Regular y los EstadoAFN del AFN. Se crean EstadoAFN's cuando se
      * necesiten, pero aún no se definen las transiciones sobre los mismos estados (se crean todos, pero sólo se puede acceder
      * a ellos mediante el objeto de tipo ExpresionRegular.Grupo), excepto para los grupos que tienen Cerradura de Kleene.
-     * @param grupoPadre
-     * @param anterior
-     * @param siguiente 
+     * @param grupoPadre objeto con una porción de la expresión regular (que puede contener a más objetos del mismo tipo).
+     * Este objeto apunta a un EstadoAFN anterior y siguiente a él.
+     * @param anterior EstadoAFN que accede a la porción de la expresión regular que se evalúa.
+     * @param siguiente EstadoAFN al que llega la porción de la expresión regular que se evalúa.
      */
     private void conectar_expresion_regular(ExpresionRegular.Grupo grupoPadre, EstadoAFN anterior, EstadoAFN siguiente, ArrayList<EstadoAFN> listaEstados) {
         ArrayList<ExpresionRegular.Grupo> grupo = grupoPadre.getGrupos();
@@ -226,13 +249,15 @@ public class AFN {
         }   // Hasta aquí se garantiza la conexión de forma recursiva de todos los grupos generados para la Expresión Regular
     }
     /**
-     * Método que crea las transiciones de los EstadoAFN del AFN. Previo a esto, cada ExpresionRegular.Grupo tiene punteros
-     * a los EstadoAFN a los que apunta, pero aún no se ha definito la Cerradura de Kleene de cada grupo.
-     * Queda la evaluación de los caracteres. Para ello, los grupos que generan transiciones son aquellos que tienen en su
-     * atributo Grupo.expresion un sólo caracter (esto es, por el alfabeto que tiene un caracter para cada símbolo).
-     * @param grupoPadre
-     * @param anterior
-     * @param siguiente 
+     * Método que crea las transiciones de los EstadoAFN del AFN, según la evaluación de los operandos de la Expresión
+     * Regular estructurada en un objeto ExpresionRegular.Grupo. Previo a esto, cada ExpresionRegular.Grupo interna tiene
+     * punteros a los EstadoAFN a los que apunta. Las transiciones se definene mediante la evaluación de los operandos en los
+     * grupos y los caracteres del alfabeto (de ahí que el alfabeto del AFN this se basa en el de la ExpresionRegular). Los
+     * grupos que generan transiciones son aquellos que tienen en su atributo Grupo.expresion un sólo caracter (esto es, por
+     * el alfabeto que tiene un caracter para cada símbolo).
+     * @param grupoPadre objeto con operando (un símbolo del alfabeto) y operadores utilizado para definir una transición del AFN.
+     * @param anterior EstadoAFN que apuntará a 'siguiente' con el símbolo definido como operando en 'grupoPadre'.
+     * @param siguiente EstadoAFN al que llega 'anterior' con el símbolo definido como operando en 'grupoPadre'.
      */
     private void crear_transiciones(ExpresionRegular.Grupo grupoPadre, ArrayList<EstadoAFN> listaEstados) {
         // Accedo al Grupo más a la izquierda del nivel más bajo (siendo el principal de nivel 0)
@@ -276,37 +301,36 @@ public class AFN {
     }
     
     /**FALTA IMPLEMENTAR!!!
-     * Función que determina si 'cadena' pertenece al Lenguaje que implementa el Autómata. Para ello, prueba cada uno de los caracteres
-     * que conforman 'cadena' y realiza la transición correspondiente al estado-símbolo. "Se dice que una cadena pertenece al
-     * lenguaje definido por el autómata si y solo sí el autómata va a un estado aceptable cuando los símbolos de 'cadena' son
-     * entrada para el autómata en suceción de izquierda a derecha, empezando cuando el autómata está en un estado inicial".
+     * Función que determina si 'cadena' pertenece al Lenguaje que implementa el AFN. Para ello, evalúa cada uno de los
+     * caracteres que conforman 'cadena' y realiza la transición correspondiente al estado-símbolo.
+     * "Se dice que una cadena pertenece al lenguaje definido por el autómata si y solo sí el autómata va a un estado
+     * aceptable cuando los símbolos de 'cadena' son entrada para el autómata en suceción de izquierda a derecha, empezando
+     * cuando el autómata está en un estado inicial".
+     * También evalúa si la cadena vacía (cadena.length()==0) pertenece al Lenguaje del AFN. Por ejemplo, el AFN con
+     * Lenguaje L={a,b} y que define la Expresión Regular (a+b)* acepta la cadena vacía como válida.
      * @param cadena suseción de símbolos (caracteres) que se prueban en el autómata.
      * @return 'true' si 'cadena' pertenece al lenguaje del autómata; 'false' en caso contrario.
-     * @throws Excepciones.ExcepcionCadenaNoValida
+     * @throws Excepciones.ExcepcionCadenaNoValida Excepción que se lanza en caso de que la cadena contenga caracteres que no
+     * pertenecen al Alfabeto del AFN.
+     * @throws Excepciones.ExcepcionAutomataIncorrecto Excepción que se lanza en caso de que el AFN no esté contruido correctamente.
      */
     public boolean probarCadena(String cadena) throws ExcepcionCadenaNoValida, ExcepcionAutomataIncorrecto {
         if (this.alfabeto == null)
-            throw new ExcepcionAutomataIncorrecto("El Autómata no tiene alfabeto");
+            throw new ExcepcionAutomataIncorrecto("El Autómata no tiene alfabeto o aún no ha sido inicializado");
         estaEnEstadoAceptable = false;
         EstadoAFN iterador = estados[0];   // iterador se incia como el Estado Inicial.
         
         // Verifico si la cadena es vacía. Para ello, se verifica si el Autómata tiene una o varias transiciones con la cadena vacía.
         // De existir una transición con cadena vacía hacia un estado aceptable, la cadena es válida.
-        if (cadena.length() == 0) {
-            ArrayList<EstadoAFN> transicionesNulas = iterador.getTransicionesNulas();   // Obtengo las transiciones nulas del Estado Inicial
-            int longitud = transicionesNulas.size();
-            // Evalúo si alguna de las transiciones nulas lleva a un estado final
-            for(int i=0; i<longitud; i++) {
-                estaEnEstadoAceptable = (transicionesNulas.get(i).esAceptable());
-                if (estaEnEstadoAceptable)
-                    i = longitud;   // Para cerrar el ciclo
-            }
-        } else {    // Verificación de la cadena cuando no es vacía
-            recorrerAutomata(iterador, cadena, 0);
+        ArrayList<EstadoAFN> visitados = new ArrayList<>();
+        if (cadena.length() == 0)
+            recorrerAutomataConCadenaVacia(iterador, visitados);
+        else {    // Verificación de la cadena cuando no es vacía
+            recorrerAutomata(iterador, cadena, 0, visitados);
         }
         return estaEnEstadoAceptable;
     }
-    private void recorrerAutomata(EstadoAFN iterador, String cadena, int index) throws ExcepcionCadenaNoValida {
+    private void recorrerAutomata(EstadoAFN iterador, String cadena, int index, ArrayList<EstadoAFN> visitados) throws ExcepcionCadenaNoValida {
         if (index < cadena.length()) {
             String caracter = ""+cadena.charAt(index);
             // Busco si caracter es un símbolo del alfabeto
@@ -326,7 +350,7 @@ public class AFN {
                 if ((index+1) == cadena.length())
                     estaEnEstadoAceptable = (transiciones.get(i).esAceptable());
                 if (!estaEnEstadoAceptable)
-                    recorrerAutomata(transiciones.get(i), cadena, index+1);
+                    recorrerAutomata(transiciones.get(i), cadena, index+1, visitados);
                 else
                     i = tamaño;
             }
@@ -336,12 +360,36 @@ public class AFN {
                 tamaño = transiciones.size();
                 for(int i=0; i<tamaño; i++) {
                     if ((index+1) == cadena.length())
-                        estaEnEstadoAceptable = (transiciones.get(i).esAceptable());
+                        estaEnEstadoAceptable = (!estaEnEstadoAceptable) ? (transiciones.get(i).esAceptable()) : estaEnEstadoAceptable;
                     if (!estaEnEstadoAceptable)
-                        recorrerAutomata(transiciones.get(i), cadena, index);
+                        recorrerAutomata(transiciones.get(i), cadena, index, visitados);
                     else
                         i = tamaño;
                 }
+            }
+        } else
+            recorrerAutomataConCadenaVacia(iterador, visitados);
+    }
+    /**
+     * Método recursivo que recorre el Autómata en caso de que la cadena a probar esté vacía. Este método parte desde
+     * iterador = estados[0] (el estado inicial) y recorre la Cerradura de Kleene del estado inicial (esto es, el conjunto
+     * de todos los estados a los que se puede llegar con el caracter nulo desde el estado inicial). Si alguno de los estados
+     * a los que se llega es final, entonces la cadena vacía si es aceptada por el Autómata
+     * @param iterador EstadoAFN en el se probará la Cerradura de Kleene del Estado inicial.
+     */
+    private void recorrerAutomataConCadenaVacia(EstadoAFN iterador, ArrayList<EstadoAFN> visitados) {
+        // Si la cadena es vacía, se llama indemiatamente a este método por lo que iterador = estados[0] (el inicial)
+        if (!estaEnEstadoAceptable && !visitados.contains(iterador)) {
+            estaEnEstadoAceptable = iterador.esAceptable();
+            visitados.add(iterador);
+            ArrayList<EstadoAFN> transicionesNulas = iterador.getTransicionesNulas();
+            int cantidad = transicionesNulas.size();
+            for(int i=0; i<cantidad; i++) {
+                if (!estaEnEstadoAceptable) {
+                    recorrerAutomataConCadenaVacia(transicionesNulas.get(i), visitados);
+                }
+                else
+                    i = cantidad;
             }
         }
     }

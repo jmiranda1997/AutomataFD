@@ -194,7 +194,7 @@ public class Ventana_crear_Automata  {
 
         caja_descripcion = new JTextArea(3,25);
         caja_descripcion.setPreferredSize(new Dimension(290,80));
-        caja_descripcion.setLineWrap(true);
+        caja_descripcion.setLineWrap(true); // Propiedad para Multilinea
         caja_descripcion.setWrapStyleWord(true);
         caja_descripcion.addKeyListener(new KeyListener() {
             @Override
