@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class EstadoAFN {
     private boolean aceptable;
     private ArrayList<EstadoAFN>[] transiciones;
+    public ArrayList<EstadoAFN> cerradura;
     private String nombre;
 
     /**
@@ -26,6 +27,8 @@ public class EstadoAFN {
     public EstadoAFN() {
         this.aceptable = false;
         this.transiciones = null;
+        this.cerradura = null;
+        this.nombre = null;
     }
     /**
      * Constructor que inicializa un estado con 'cantidadSimbolos + 1' de transiciones (que es igual a la cantidad de
@@ -38,6 +41,7 @@ public class EstadoAFN {
         for(int i=0; i<=cantidadSimbolos; i++)
             this.transiciones[i] = new ArrayList<>(); // Agrego las 'cantidadSimbolos + 1' filas que tendrá el estado (no inicializo los arreglos)
         /* Las transiciones para el caracter nulo se encontrarán en la última posición del arreglo */
+        this.cerradura = null;
     }
 
     /**
@@ -73,9 +77,9 @@ public class EstadoAFN {
      */
 
     public ArrayList<EstadoAFN> getTransicionesNulas(){return this.transiciones[this.transiciones.length-1];}
-    public ArrayList<EstadoAFN> cerradura;
+    
     public ArrayList<EstadoAFN> getCerradura() { 
-         cerradura = new ArrayList<EstadoAFN>();
+         cerradura = new ArrayList<>();
 
          
          ArrayList<EstadoAFN> aux = this.transiciones[this.transiciones.length-1];

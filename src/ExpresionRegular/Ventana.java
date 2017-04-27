@@ -26,6 +26,7 @@ public class Ventana extends javax.swing.JFrame {
     public Ventana() {
         initComponents();
         validador = new ExpresionRegular();
+        AutomataAFN = new AFN();
     }
 
     /**
@@ -121,7 +122,7 @@ public class Ventana extends javax.swing.JFrame {
 
        try {
            validador.setAlfabeto(new String[]{"a","b","c","d"});
-            validador.validarER(campo_expresion.getText());
+            validador.validarEstructuraER(campo_expresion.getText());
             System.out.println("============== SE IMPRIMIRÁ UNA EXPRESIÓN REGULAR COMPLETA");
             validador.generarGrupos();
             System.out.println("Resultado = "+validador.toString());
@@ -151,24 +152,15 @@ public class Ventana extends javax.swing.JFrame {
     private void evaluar_cadenaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_evaluar_cadenaActionPerformed
         try {
             String cadena = campo_cadena.getText();
-            AutomataAFN.probarCadena(cadena);
-            JOptionPane.showMessageDialog(this, "La cadena SI pertenece al lenguaje", "Resultado", JOptionPane.INFORMATION_MESSAGE);
+            boolean resultado = AutomataAFN.probarCadena(cadena);
+            JOptionPane.showMessageDialog(this,
+                    "La cadena "+((cadena.length()==0)?"vacía":"'"+cadena+"'")+" "+((resultado)?"SI":"NO")+" pertenece al lenguaje",
+                    "Resultado",
+                    (resultado)?JOptionPane.INFORMATION_MESSAGE:JOptionPane.ERROR_MESSAGE);
         } catch (ExcepcionCadenaNoValida | ExcepcionAutomataIncorrecto ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Resultado", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_evaluar_cadenaActionPerformed
-    private boolean validar() {
-        boolean valido = false;
-        String cadena = evaluar_expresion_regular.getText();
-        // Determinación de paridad entre paréntesis abierto y paréntesis cerrado
-        int contAb = 0, contCe = 0;
-        for(int i=0; i<cadena.length(); i++) {
-            String caracter = ""+cadena.charAt(i);
-            if ("(".equals(caracter)) contAb++;
-            if (")".equals(caracter)) contCe++;
-        }
-        return (contAb == contCe);
-    }
     /**
      * @param args the command line arguments
      */

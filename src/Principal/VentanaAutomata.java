@@ -340,7 +340,7 @@ public class VentanaAutomata implements ActionListener {
                     alfabeto[cont] = cajas_alfabeto[cont].getText();
                     try {
                         ExpresionRegular validador = new ExpresionRegular();
-                        validador.validarER(Expresion);
+                        validador.validarEstructuraER(Expresion);
                         validador.generarGrupos();
                         AFN no_det = new AFN(alfabeto);
                         no_det.crearAutomata(validador.getGrupo());

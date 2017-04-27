@@ -16,26 +16,10 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="Nuevo_automata">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Nuevo Automata"/>
+                <Property name="text" type="java.lang.String" value="Nuevo Aut&#xf3;mata Finito"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="Nuevo_automataActionPerformed"/>
-              </Events>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Expresion Regular"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem1ActionPerformed"/>
-              </Events>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="abrir_automata">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Abrir Automata"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="abrir_automataActionPerformed"/>
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem3">
@@ -55,7 +39,7 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="Importar_automata">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Importar Automata"/>
+                <Property name="text" type="java.lang.String" value="Importar Aut&#xf3;mata FD"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="Importar_automataActionPerformed"/>
@@ -63,7 +47,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="exportar_automata">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Exportar Automata"/>
+                <Property name="text" type="java.lang.String" value="Exportar Aut&#xf3;mata FD"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportar_automataActionPerformed"/>
@@ -71,10 +55,18 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="exportar_automata_imagen">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Exportar Automata como Imagen"/>
+                <Property name="text" type="java.lang.String" value="Exportar Aut&#xf3;mata FD como Imagen"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportar_automata_imagenActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="abrir_automata">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Abrir Aut&#xf3;mata FD"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="abrir_automataActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
