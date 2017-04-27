@@ -53,6 +53,18 @@ public class Expresion_Regular {
      */
     public String Expresion(){
         boolean listo = false;
+        for (int i = 0; i < ecuaciones.length; i++) {
+            for (int j = 0; j < ecuaciones.length; j++) {
+                if(ecuaciones[i]!= null && ecuaciones[j]!= null){
+                    if(i!=j){
+                    if(ecuaciones[i].contiene(ecuaciones[j]) && ecuaciones[j].contiene(ecuaciones[i])){
+                        ecuaciones[i].Operar(ecuaciones[j]);
+                    }
+                    }
+                }   
+            }   
+        }
+        
         while(listo != true){
             for (int i = 1; i < ecuaciones.length; i++) {
                     if(ecuaciones[0]!= null && ecuaciones[i]!= null)

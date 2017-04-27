@@ -147,11 +147,14 @@ public final class ecuaciones_argen {
             if(posicion != -1){
                 
                 String agregar = Simbolo[posicion];
-                    String[] Simbolo2 = Combinar.getSimbolo();
+                    String[] Simbolo2 = new String[Combinar.getSimbolo().length];
                     String[] Estado2 = Combinar.getEstado();
                     int aux=0;
                     for (int j = 0; j < Simbolo2.length; j++) {
-                        Simbolo2[j] =    agregar +"("+ Simbolo2[j]+")";    
+                        String aux2 = Combinar.getSimbolo()[j];
+                        if(aux2.length()>0)
+                        Simbolo2[j] =    "("+agregar+")" +"("+ aux2+")";
+                        else Simbolo2[j] = "("+agregar+")";
                     }
                     ArrayList<String> Nuevo_Estado = new ArrayList<String>();
                     ArrayList<String> Nuevo_Simbolo = new ArrayList<String>();
@@ -212,7 +215,14 @@ public final class ecuaciones_argen {
         return Simbolo;
     }
     
-    
+    public boolean contiene(ecuaciones_argen combinar){
+        boolean contiene = false;
+        String[] estado2 = combinar.getEstado();
+        for (int i = 0; i < estado2.length; i++) {
+            if(estado2[i].equals(Simbolo_Estado)) contiene = true;
+        }
+        return contiene;
+    }
     
     
 }
