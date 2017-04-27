@@ -71,28 +71,31 @@ public class EstadoAFN {
      * Función que devuelve todas las transiciones asociadas a la cadena vacía pertenecientes a este EstadoAFN.
      * @return el arreglo de transiciones (que son otros estados) asociados a la cadena vacía.
      */
-    public ArrayList<EstadoAFN> getTransicionesNulas() { return this.transiciones[this.transiciones.length-1]; }
+
+    public ArrayList<EstadoAFN> getTransicionesNulas(){return this.transiciones[this.transiciones.length-1];}
     public ArrayList<EstadoAFN> cerradura;
-    public ArrayList<EstadoAFN> getCerradura(){
-     cerradura = new ArrayList<EstadoAFN>();
+    public ArrayList<EstadoAFN> getCerradura() { 
+         cerradura = new ArrayList<EstadoAFN>();
+
          
          ArrayList<EstadoAFN> aux = this.transiciones[this.transiciones.length-1];
          cerraduraKleen(aux);
          
          if(!cerradura.contains(this)) cerradura.add(this);
          
-         return cerradura;   
+
+         return cerradura;
+
     }
     
     private void cerraduraKleen(ArrayList<EstadoAFN> Array){
          if(!Array.isEmpty()) {
             for(EstadoAFN aux : Array) {
                ArrayList<EstadoAFN> aux2 = aux.transiciones[aux.transiciones.length-1];
-                for (int i = 0; i < aux2.size(); i++) {
-                    if(!cerradura.contains(aux2.get(i))){
-                        cerradura.add(aux2.get(i));
-                    }
+                for (EstadoAFN aux21: aux2) {
+                    if(!cerradura.contains(aux21)){ cerradura.add(aux21);}
                 }
+                if(!cerradura.contains(aux)) cerradura.add(aux);
                if(!aux2.isEmpty()) cerraduraKleen(aux2);  
             } 
          }
